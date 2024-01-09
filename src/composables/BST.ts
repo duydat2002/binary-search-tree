@@ -140,4 +140,19 @@ export default class BST {
     else if (root?.parent) return root.parent;
     else return null;
   }
+
+  getHeight(root: Nullable<BSTNode>): number {
+    if (!root) return -1;
+    else return Math.max(this.getHeight(root.left), this.getHeight(root.right)) + 1;
+  }
+
+  getNodeLevel(root: Nullable<BSTNode>, value: number, level: number = 0): number {
+    if (!root) return 0;
+    else if (root.value == value) return level;
+    else
+      return (
+        this.getNodeLevel(root.left, value, level + 1) +
+        this.getNodeLevel(root.right, value, level + 1)
+      );
+  }
 }

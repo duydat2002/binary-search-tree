@@ -18,7 +18,7 @@ const node2: INode = { value: 8, count: 2, position: { x: 200, y: 230 } };
 onMounted(() => {
   const tree = new BST();
 
-  [10, 5, 11, 4, 8, 7, 9, 5].forEach((i) => {
+  [10, 5, 11, 4, 8, 7, 9, 5, 6].forEach((i) => {
     tree.insert(i);
   });
 
@@ -29,18 +29,23 @@ onMounted(() => {
   });
   console.log(arr);
 
-  tree.remove(5);
+  // tree.remove(5);
 
-  arr = [];
-  tree.preorder(tree.getRoot(), (node) => {
-    arr.push(node);
-  });
-  console.log(arr);
+  // arr = [];
+  // tree.preorder(tree.getRoot(), (node) => {
+  //   arr.push(node);
+  // });
+  // console.log(arr);
 
-  console.log(tree.search(tree.getRoot(), 8));
+  console.log(tree.search(tree.getRoot(), 5));
 
   console.log("min", tree.findMin(tree.getRoot()));
   console.log("max", tree.findMax(tree.getRoot()));
+  console.log("height", tree.getHeight(tree.getRoot()));
+  console.log("nodeLevel", tree.getNodeLevel(tree.getRoot(), 10));
+  console.log("nodeLevel", tree.getNodeLevel(tree.getRoot(), 5));
+  console.log("nodeLevel", tree.getNodeLevel(tree.getRoot(), 8));
+  console.log("nodeLevel", tree.getNodeLevel(tree.getRoot(), 6));
 });
 </script>
 
