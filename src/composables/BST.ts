@@ -2,9 +2,11 @@ import BSTNode from "./Node";
 
 export default class BST {
   root: Nullable<BSTNode>;
+  values: number[];
 
   constructor() {
     this.root = null;
+    this.values = [];
   }
 
   isEmpty() {
@@ -45,22 +47,30 @@ export default class BST {
   insert(value: number) {
     const node = new BSTNode(value);
 
+    let isExist = true;
+    if (!this.values.includes(value)) {
+      this.values.push(value);
+      isExist = false;
+    }
+
     if (this.isEmpty()) {
       this.root = node;
     } else {
-      this.insertNode(this.root!, node);
+      this.insertNode(this.root!, node, isExist);
     }
   }
 
-  insertNode(root: BSTNode, node: BSTNode) {
+  insertNode(root: BSTNode, node: BSTNode, isExist: boolean = false) {
     if (node.value < root.value) {
-      if (root.left) this.insertNode(root.left, node);
+      if (!isExist) root.leftSize = root.leftSize + 1;
+
+      if (root.left) this.insertNode(root.left, node, isExist);
       else {
         root.left = node;
         node.parent = root;
       }
     } else if (node.value > root.value) {
-      if (root.right) this.insertNode(root.right, node);
+      if (root.right) this.insertNode(root.right, node, isExist);
       else {
         root.right = node;
         node.parent = root;
@@ -141,18 +151,36 @@ export default class BST {
     else return null;
   }
 
-  getHeight(root: Nullable<BSTNode>): number {
+  findHeight(root: Nullable<BSTNode>): number {
     if (!root) return -1;
-    else return Math.max(this.getHeight(root.left), this.getHeight(root.right)) + 1;
+    else return Math.max(this.findHeight(root.left), this.findHeight(root.right)) + 1;
   }
 
-  getNodeLevel(root: Nullable<BSTNode>, value: number, level: number = 0): number {
+  findNodeLevel(root: Nullable<BSTNode>, value: number, level: number = 0): number {
     if (!root) return 0;
     else if (root.value == value) return level;
     else
       return (
-        this.getNodeLevel(root.left, value, level + 1) +
-        this.getNodeLevel(root.right, value, level + 1)
+        this.findNodeLevel(root.left, value, level + 1) +
+        this.findNodeLevel(root.right, value, level + 1)
       );
+  }
+
+  findNodeByRank(root: Nullable<BSTNode>, rank: number): Nullable<BSTNode> {
+    if (rank == 0) return null;
+
+    if (!root) return null;
+
+    if (rank == root.leftSize + 1) return root;
+    else if (rank <= root.leftSize) return this.findNodeByRank(root.left, rank);
+    else return this.findNodeByRank(root.right, rank - root.leftSize - 1);
+  }
+
+  findNodeRank(root: Nullable<BSTNode>, value: number): number {
+    if (!root) return 0;
+
+    if (value < root.value) return this.findNodeRank(root.left, value);
+    else if (value > root.value) return root.leftSize + 1 + this.findNodeRank(root.right, value);
+    else return root.leftSize + 1;
   }
 }

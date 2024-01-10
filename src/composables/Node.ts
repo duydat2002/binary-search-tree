@@ -1,9 +1,10 @@
 export default class BSTNode {
   value: number;
-  quantity: number;
   left: BSTNode | null;
   right: BSTNode | null;
+  leftSize: number;
   parent: BSTNode | null;
+  quantity: number;
 
   constructor(value: number) {
     this.value = value;
@@ -11,5 +12,6 @@ export default class BSTNode {
     this.left = null;
     this.right = null;
     this.parent = null;
+    this.leftSize = 0;
   }
 }
