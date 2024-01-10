@@ -17,6 +17,14 @@ export default class BST {
     return this.root;
   }
 
+  getNodes(root: Nullable<BSTNode>) {
+    const nodes: BSTNode[] = [];
+    this.inorder(root, (node) => {
+      nodes.push(node);
+    });
+    return nodes;
+  }
+
   // Tiền tố
   preorder(root: Nullable<BSTNode>, cb: Fn<BSTNode, void>) {
     if (root) {

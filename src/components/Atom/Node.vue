@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import { NODE_RADIUS, NODE_PADDING, NODE_TEXTSIZE } from "@/constants";
+import { NODE_RADIUS, TEXT_PADDING, NODE_TEXTSIZE } from "@/constants";
 import { INode } from "@/types";
 
 const props = withDefaults(
@@ -16,10 +16,10 @@ const props = withDefaults(
 );
 
 const textTopY = computed(() => {
-  return props.node.position.y - NODE_RADIUS - NODE_PADDING;
+  return props.node.position.y - NODE_RADIUS - TEXT_PADDING;
 });
 const textBottomY = computed(() => {
-  return props.node.position.y + NODE_RADIUS + NODE_PADDING + (NODE_TEXTSIZE + 5) * 0.75;
+  return props.node.position.y + NODE_RADIUS + TEXT_PADDING + (NODE_TEXTSIZE + 5) * 0.75;
 });
 </script>
 
@@ -43,7 +43,7 @@ const textBottomY = computed(() => {
       :font-size="NODE_TEXTSIZE"
       fill="red"
     >
-      {{ !node.count ? node.value : `${node.value}-${node.count}` }}
+      {{ node.quantity == 1 ? node.value : `${node.value}-${node.quantity}` }}
     </text>
     <text
       v-if="isPoint"
