@@ -18,7 +18,7 @@ const radius = ref(5);
 
 onMounted(() => {
   const tree = new BST();
-  const { initNodes } = useDrawBST();
+  const { initNodes } = useDrawBST(tree);
 
   [10, 5, 11, 4, 8, 7, 9, 5, 6, 4, 6].forEach((i) => {
     tree.insert(i);

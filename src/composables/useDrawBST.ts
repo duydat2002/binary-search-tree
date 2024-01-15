@@ -3,9 +3,7 @@ import BinarySearchTree from "./BST";
 import BSTNode from "./Node";
 import { NODE_PADDING, SVG_PADDING } from "@/constants";
 
-export const useDrawBST = () => {
-  const BST = new BinarySearchTree();
-
+export const useDrawBST = (BST: BinarySearchTree) => {
   const initNodes = (root: Nullable<BSTNode>) => {
     const nodes: INode[] = [];
 
@@ -23,7 +21,13 @@ export const useDrawBST = () => {
     return nodes;
   };
 
-  const initUI = (root: Nullable<BSTNode>) => {
+  const emptyBST = () => {
+    BST.emptyTree();
+  };
+
+  const initUI = () => {
+    const root = BST.getRoot();
+
     const nodes: INode[] = [];
     const lines: ILine[] = [];
 
@@ -65,8 +69,36 @@ export const useDrawBST = () => {
     return { nodes, lines };
   };
 
+  const createNodeUI = (value: number) => {
+    BST.insert(value);
+
+    const root = BST.getRoot();
+    const node = BST.search(root, value);
+    const rank = BST.findNodeRank(root, value);
+    const level = BST.findNodeLevel(root, value);
+    const position = {
+      x: NODE_PADDING * rank + SVG_PADDING,
+      y: NODE_PADDING * level + SVG_PADDING,
+    };
+
+    return {
+      ...node,
+      rank,
+      level,
+      position,
+    } as INode;
+  };
+
+  const insertNodeUI = (value: number) => {
+    if (!BST.getRoot()) {
+      createNodeUI(value);
+    } else if (value < BST.getRoot()!.value) {
+    }
+  };
+
   return {
     initNodes,
     initUI,
+    emptyBST,
   };
 };

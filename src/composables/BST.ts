@@ -13,6 +13,11 @@ export default class BST {
     return this.root == null;
   }
 
+  emptyTree() {
+    this.root = null;
+    this.values = [];
+  }
+
   getRoot() {
     return this.root;
   }
