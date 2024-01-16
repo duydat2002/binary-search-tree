@@ -26,6 +26,10 @@ export const useBSTUI = () => {
     return root ? BST.value[root] : null;
   };
 
+  const getMaxRank = () => {
+    return Object.keys(BST.value).length - 1;
+  };
+
   const resetCodeTrace = () => {
     codeTrace = {
       codes: [],
@@ -40,7 +44,6 @@ export const useBSTUI = () => {
     let lineTraversed: { [key: string]: boolean } = {};
 
     console.log("===============================");
-    console.log("before", tempBST);
 
     let trace = createTrace(tempBST);
     trace.status = `The current BST rooted at ${tempBST["root"]?.value || "null"}.`;
@@ -49,7 +52,7 @@ export const useBSTUI = () => {
 
     let isNeedNewNode = true;
     // Insert
-    if (!tempBST["root"]) {
+    if (tempBST["root"] == null) {
       tempBST["root"] = { value } as UINode;
       tempBST[value] = {
         value: value,
@@ -77,7 +80,7 @@ export const useBSTUI = () => {
         if (value < parentValue) {
           if (!tempBST[value]) tempBST[parentValue]!.leftSize += 1;
 
-          if (tempBST[parentValue]!.left) {
+          if (tempBST[parentValue]!.left != null) {
             const left = tempBST[parentValue]!.left!;
             trace = createTrace(tempBST, nodeTraversed, lineTraversed);
             trace.lines[left] = {
@@ -92,7 +95,7 @@ export const useBSTUI = () => {
             parentValue = tempBST[parentValue]!.left!;
           } else break;
         } else if (value > parentValue) {
-          if (tempBST[parentValue]!.right) {
+          if (tempBST[parentValue]!.right != null) {
             const right = tempBST[parentValue]!.right!;
             trace = createTrace(tempBST, nodeTraversed, lineTraversed);
             trace.lines[right] = {
@@ -107,6 +110,8 @@ export const useBSTUI = () => {
             parentValue = tempBST[parentValue]!.right!;
           } else break;
         } else {
+          tempBST[value]!.quantity += 1;
+
           trace = createTrace(tempBST, nodeTraversed, lineTraversed);
           trace.status = `${value} is equal to ${value}, so just increment its frequency.`;
           trace.codeIndex = 6;
@@ -117,7 +122,6 @@ export const useBSTUI = () => {
           } as UINode;
           codeTrace.traces.push(trace);
 
-          tempBST[value]!.quantity += 1;
           isNeedNewNode = false;
           break;
         }
@@ -169,7 +173,6 @@ export const useBSTUI = () => {
 
     BST.value = tempBST;
 
-    console.log("after", tempBST);
     console.log(codeTrace);
     return codeTrace;
   };
@@ -197,7 +200,7 @@ export const useBSTUI = () => {
 
       const parentKey = BSTObj[key]?.parent;
 
-      if (parentKey) {
+      if (parentKey != null) {
         trace.lines[key] = {
           key,
           start: BSTObj[parentKey]!,
@@ -260,8 +263,6 @@ export const useBSTUI = () => {
         } as UINode;
       }
     }
-
-    function updatePosition() {}
   };
 
   const findNodeLevel = (
@@ -281,7 +282,7 @@ export const useBSTUI = () => {
   };
 
   const findNodeRank = (BST: INodes, root: Nullable<number> = null, value: number): number => {
-    if (!root) return 0;
+    if (root == null) return 0;
     if (value < root) return findNodeRank(BST, BST[root]?.left, value);
     else if (value > root)
       return BST[root]!.leftSize + 1 + findNodeRank(BST, BST[root]?.right, value);
@@ -290,6 +291,7 @@ export const useBSTUI = () => {
 
   return {
     BST,
+    getMaxRank,
     getBST,
     getBSTRoot,
     insert,

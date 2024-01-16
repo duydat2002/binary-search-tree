@@ -11,7 +11,7 @@ const textY = computed(() => {
   return props.node.position.y - NODE_RADIUS - TEXT_PADDING;
 });
 const extraTextY = computed(() => {
-  return props.node.position.y + NODE_RADIUS + TEXT_PADDING + (NODE_TEXTSIZE + 5) * 0.75;
+  return props.node.position.y + NODE_RADIUS + TEXT_PADDING + (NODE_TEXTSIZE + 2) * 0.75;
 });
 
 const textStyle = computed(() => {
