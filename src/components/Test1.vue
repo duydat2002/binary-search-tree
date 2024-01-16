@@ -3,17 +3,20 @@ import UINode from "./Atom/UINode.vue";
 import UILine from "./Atom/UILine.vue";
 import { ref, computed, onMounted } from "vue";
 import { useBSTUI } from "@/composables/useBSTUI";
-import { ICodeTrace } from "@/types";
+import { ICodeTrace, ITrace } from "@/types";
 
 import { useCommonStore } from "@/store";
-
 const { setBstWidth } = useCommonStore();
+
+const { BST, resetBST, getMaxRank, getBST, getBSTRoot, insert, findNodeLevel, findNodeRank } =
+  useBSTUI();
 
 const codeTrace = ref<ICodeTrace>({
   codes: [],
   traces: [],
 });
 const index = ref(0);
+const values = ref("");
 
 const status = computed(() => {
   const trace = codeTrace.value.traces[index.value];
@@ -30,36 +33,70 @@ const lines = computed(() => {
   return codeTrace.value.traces[index.value]?.lines;
 });
 
-onMounted(() => {
-  const { BST, getMaxRank, getBST, getBSTRoot, insert, findNodeLevel, findNodeRank } = useBSTUI();
+const onInsert = () => {
+  index.value = 0;
 
+  let codes: string[] = [];
+  const traces: ITrace[] = [];
+
+  if (/^(?=.*\d)[\d\s,]*$/.test(values.value)) {
+    const arr = values.value?.split(",").map((v) => parseInt(v));
+
+    arr.forEach((a) => {
+      const codeTrace = insert(a);
+      codes = codeTrace.codes;
+      traces.push(...codeTrace.traces);
+    });
+
+    codeTrace.value = {
+      codes,
+      traces,
+    };
+  }
+};
+
+const onRandom = () => {
+  resetBST();
+
+  index.value = 0;
+
+  let codes: string[] = [];
+  const traces: ITrace[] = [];
+
+  const arr = Array.from({ length: 50 }, () => Math.floor(Math.random() * 100));
+
+  arr.forEach((a) => {
+    const codeTrace = insert(a);
+    codes = codeTrace.codes;
+    traces.push(...codeTrace.traces);
+  });
+
+  codeTrace.value = {
+    codes,
+    traces,
+  };
+};
+
+onMounted(() => {
   // insert(10);
   // insert(5);
   // insert(5);
   // insert(8);
   // insert(7);
   // insert(4);
-
-  let arr = Array.from({ length: 30 }, () => Math.floor(Math.random() * 100));
-
-  // const arr = [5, 10, 3, 0, 2, 4];
-  // const arr = [
-  //   28, 63, 45, 16, 6, 39, 82, 41, 85, 93, 41, 63, 34, 51, 26, 2, 16, 13, 21, 93, 78, 59, 46, 60, 9,
-  //   75, 25, 32, 89, 35, 21, 12, 80, 2, 57, 99, 49, 12, 7, 11, 87, 35, 98, 55, 89, 50, 41, 74, 2, 8,
-  // ];
-  arr.forEach((a) => insert(a));
-
-  codeTrace.value = insert(39);
-
-  console.log("getMaxRank", getMaxRank());
-
-  setBstWidth((getMaxRank() + 4) * 30);
-
+  // let arr = Array.from({ length: 30 }, () => Math.floor(Math.random() * 100));
+  // // const arr = [5, 10, 3, 0, 2, 4];
+  // // const arr = [
+  // //   28, 63, 45, 16, 6, 39, 82, 41, 85, 93, 41, 63, 34, 51, 26, 2, 16, 13, 21, 93, 78, 59, 46, 60, 9,
+  // //   75, 25, 32, 89, 35, 21, 12, 80, 2, 57, 99, 49, 12, 7, 11, 87, 35, 98, 55, 89, 50, 41, 74, 2, 8,
+  // // ];
+  // arr.forEach((a) => insert(a));
+  // codeTrace.value = insert(39);
+  // console.log("getMaxRank", getMaxRank());
+  // setBstWidth((getMaxRank() + 4) * 30);
   // const
   // setBstWidth()
-
   // codeTrace.value = insert(6);
-
   // console.log("BST", BST.value);
   // console.log("findNodeLevel 5", findNodeLevel(getBST(), getBSTRoot()?.value, 5));
   // console.log("findNodeRank 8", findNodeRank(getBST(), getBSTRoot()?.value, 8));
@@ -67,6 +104,11 @@ onMounted(() => {
 </script>
 
 <template>
+  <div>
+    <input v-model="values" />
+    <button @click="onInsert">Insert</button>
+    <button @click="onRandom">Ramdom</button>
+  </div>
   <div>
     <input type="number" v-model="index" />
   </div>

@@ -65,6 +65,10 @@ onMounted(() => {});
 </template>
 
 <style scoped>
+.container {
+  overflow: hidden;
+}
+
 #box {
   transform-origin: top left;
   transition: all 0.5s;

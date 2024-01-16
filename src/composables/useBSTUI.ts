@@ -17,6 +17,10 @@ export const useBSTUI = () => {
     traces: [],
   };
 
+  const resetBST = () => {
+    BST.value = {};
+  };
+
   const getBST = () => {
     return BST.value;
   };
@@ -62,6 +66,8 @@ export const useBSTUI = () => {
         quantity: 1,
         leftSize: 0,
       } as UINode;
+
+      calcPosition(tempBST);
     } else {
       let parentValue = tempBST["root"].value;
 
@@ -291,6 +297,7 @@ export const useBSTUI = () => {
 
   return {
     BST,
+    resetBST,
     getMaxRank,
     getBST,
     getBSTRoot,
