@@ -47,12 +47,3 @@ input::file-selector-button,
 button {
   cursor: pointer;
 }
-
-svg,
-g,
-circle,
-path,
-text,
-g > * {
-  transition: all 0.5s;
-}

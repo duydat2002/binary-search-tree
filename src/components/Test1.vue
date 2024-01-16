@@ -5,36 +5,34 @@ import { ref, computed, onMounted } from "vue";
 import { useBSTUI } from "@/composables/useBSTUI";
 import { ICodeTrace, ITrace } from "@/types";
 
-import { useCommonStore } from "@/store";
+import { useBSTStore, useCommonStore } from "@/store";
+import { storeToRefs } from "pinia";
 const { setBstWidth } = useCommonStore();
 
 const { BST, resetBST, getMaxRank, getBST, getBSTRoot, insert, findNodeLevel, findNodeRank } =
   useBSTUI();
 
-const codeTrace = ref<ICodeTrace>({
-  codes: [],
-  traces: [],
-});
-const index = ref(0);
+const { codeTrace, codeIndex } = storeToRefs(useBSTStore());
+
 const values = ref("");
 
 const status = computed(() => {
-  const trace = codeTrace.value.traces[index.value];
+  const trace = codeTrace.value.traces[codeIndex.value];
   return trace ? trace.status : "";
 });
 const code = computed(() => {
-  const codeIndex = codeTrace.value.traces[index.value]?.codeIndex;
-  return codeIndex ? codeTrace.value.codes[codeIndex] : "";
+  const index = codeTrace.value.traces[codeIndex.value]?.codeIndex;
+  return index ? codeTrace.value.codes[index] : "";
 });
 const nodes = computed(() => {
-  return codeTrace.value.traces[index.value]?.nodes;
+  return codeTrace.value.traces[codeIndex.value]?.nodes;
 });
 const lines = computed(() => {
-  return codeTrace.value.traces[index.value]?.lines;
+  return codeTrace.value.traces[codeIndex.value]?.lines;
 });
 
 const onInsert = () => {
-  index.value = 0;
+  codeIndex.value = 0;
 
   let codes: string[] = [];
   const traces: ITrace[] = [];
@@ -58,7 +56,7 @@ const onInsert = () => {
 const onRandom = () => {
   resetBST();
 
-  index.value = 0;
+  codeIndex.value = 0;
 
   let codes: string[] = [];
   const traces: ITrace[] = [];
@@ -110,7 +108,7 @@ onMounted(() => {
     <button @click="onRandom">Ramdom</button>
   </div>
   <div>
-    <input type="number" v-model="index" />
+    <input type="number" v-model="codeIndex" />
   </div>
   <div>
     <p>Status: {{ status }}</p>

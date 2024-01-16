@@ -67,6 +67,7 @@ onMounted(() => {});
 <style scoped>
 .container {
   overflow: hidden;
+  /* background: #ffbbbb; */
 }
 
 #box {

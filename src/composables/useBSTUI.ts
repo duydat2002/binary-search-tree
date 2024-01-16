@@ -1,15 +1,8 @@
-import BinarySearchTree from "./BST";
-import BSTNode from "./Node";
 import { ref } from "vue";
-import { ICodeTrace, ITrace, UILine, UINode } from "@/types";
+import { ICodeTrace, INodes, ITrace, UILine, UINode } from "@/types";
 import { INSERT_TRACE, NODE_PADDING, SVG_PADDING } from "@/constants";
 
-interface INodes {
-  [key: string]: Nullable<UINode>;
-}
-
 export const useBSTUI = () => {
-  // const BST = new BinarySearchTree();
   let BST = ref<INodes>({});
   BST.value["root"] = null;
   let codeTrace: ICodeTrace = {
@@ -19,6 +12,10 @@ export const useBSTUI = () => {
 
   const resetBST = () => {
     BST.value = {};
+  };
+
+  const setBST = (newBST: INodes) => {
+    BST.value = newBST;
   };
 
   const getBST = () => {
@@ -124,7 +121,7 @@ export const useBSTUI = () => {
           trace.nodes[value] = {
             ...trace.nodes[value],
             isTraver: true,
-            extraText: "^",
+            extraText: "inc",
           } as UINode;
           codeTrace.traces.push(trace);
 
@@ -297,6 +294,7 @@ export const useBSTUI = () => {
 
   return {
     BST,
+    setBST,
     resetBST,
     getMaxRank,
     getBST,

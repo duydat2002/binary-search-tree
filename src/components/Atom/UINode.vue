@@ -54,6 +54,11 @@ const extraTextStyle = computed(() => {
 </template>
 
 <style scoped>
+circle,
+text {
+  transition: all 0.5s;
+}
+
 text {
   font-weight: bold;
   text-anchor: middle;

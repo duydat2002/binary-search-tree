@@ -26,3 +26,9 @@ const dPath = computed(() => {
     ></path>
   </Teleport>
 </template>
+
+<style scoped>
+path {
+  transition: all 0.5s;
+}
+</style>

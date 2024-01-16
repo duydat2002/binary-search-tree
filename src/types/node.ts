@@ -7,14 +7,9 @@ export interface INode extends BSTNode {
   position: IPoint;
 }
 
-// export interface UINode extends BSTNode {
-//   rank: number;
-//   level: number;
-//   position: IPoint;
-//   isShow?: boolean;
-//   isTraver?: boolean;
-//   extraText?: string;
-// }
+export interface INodes {
+  [key: string]: Nullable<UINode>;
+}
 
 export interface UINode {
   value: number;
