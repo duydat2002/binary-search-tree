@@ -1,9 +1,12 @@
 <script lang="ts" setup>
+import UILine from "../Atom/UILine.vue";
+import UINode from "../Atom/UINode.vue";
+
 import { ref, computed, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
-import { useCommonStore } from "@/store";
+import { useBSTStore } from "@/store";
 
-const { bstWidth } = storeToRefs(useCommonStore());
+const { codeTrace, codeStep } = storeToRefs(useBSTStore());
 
 const isDrag = ref(false);
 const scale = ref(1);
@@ -15,6 +18,13 @@ const boxStyle = computed(() => {
   return {
     transform: `scale(${scale.value}) translate(${translate.value.x}px, ${translate.value.y}px)`,
   };
+});
+
+const nodes = computed(() => {
+  return codeTrace.value.traces[codeStep.value]?.nodes;
+});
+const lines = computed(() => {
+  return codeTrace.value.traces[codeStep.value]?.lines;
 });
 
 const onWheel = (e: WheelEvent) => {
@@ -55,8 +65,12 @@ onMounted(() => {});
     <div id="box" :class="{ isDrag }" :style="boxStyle">
       <svg width="10000" height="10000" viewBox="0 0 10000 10000" fill="currentColor">
         <g>
-          <g id="line"></g>
-          <g id="node"></g>
+          <g id="line">
+            <UILine v-if="lines" v-for="line in lines" :key="line!.key" :line="line!" />
+          </g>
+          <g id="node">
+            <UINode v-if="nodes" v-for="node in nodes" :key="node!.value" :node="node!" />
+          </g>
           <g id="text"></g>
         </g>
       </svg>
@@ -67,7 +81,7 @@ onMounted(() => {});
 <style scoped>
 .container {
   overflow: hidden;
-  /* background: #ffbbbb; */
+  padding: 40px;
 }
 
 #box {
@@ -75,6 +89,7 @@ onMounted(() => {});
   transition: all 0.5s;
   user-select: none;
   cursor: default;
+  backface-visibility: hidden;
 }
 
 #box.isDrag {

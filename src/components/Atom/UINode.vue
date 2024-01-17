@@ -33,18 +33,16 @@ const extraTextStyle = computed(() => {
 </script>
 
 <template>
-  <Teleport to="#node">
-    <circle
-      :class="'n' + node.value"
-      :cx="node.position.x"
-      :cy="node.position.y"
-      :r="NODE_RADIUS"
-      :fill="node.isTraver ? '#ff8a27' : '#333'"
-      :stroke="node.isTraver ? '#ff8a27' : '#333'"
-      stroke-width="1"
-      :opacity="node.isShow ? 1 : 0"
-    />
-  </Teleport>
+  <circle
+    :class="'n' + node.value"
+    :cx="node.position.x"
+    :cy="node.position.y"
+    :r="NODE_RADIUS"
+    :fill="node.isTraver ? '#ff8a27' : '#333'"
+    :stroke="node.isTraver ? '#ff8a27' : '#333'"
+    stroke-width="1"
+    :opacity="node.isShow ? 1 : 0"
+  />
   <Teleport to="#text">
     <text :class="'t' + node.value" :style="textStyle">
       {{ node.quantity == 1 ? node.value : `${node.value}-${node.quantity}` }}

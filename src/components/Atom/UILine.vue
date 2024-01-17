@@ -16,15 +16,13 @@ const dPath = computed(() => {
 </script>
 
 <template>
-  <Teleport to="#line">
-    <path
-      :id="'l' + line.key"
-      :d="dPath"
-      :stroke="line.isTraver ? '#ff8a27' : '#333'"
-      :opacity="line.isShow ? 1 : 0"
-      stroke-width="2"
-    ></path>
-  </Teleport>
+  <path
+    :id="'l' + line.key"
+    :d="dPath"
+    :stroke="line.isTraver ? '#ff8a27' : '#333'"
+    :opacity="line.isShow ? 1 : 0"
+    stroke-width="2"
+  ></path>
 </template>
 
 <style scoped>

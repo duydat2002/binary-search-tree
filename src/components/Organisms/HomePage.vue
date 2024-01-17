@@ -3,20 +3,22 @@ import BackwardIcon from "@icons/backward.svg";
 import PreviousIcon from "@icons/previous.svg";
 import PauseIcon from "@icons/pause.svg";
 import PlayIcon from "@icons/play.svg";
+import ReplayIcon from "@icons/replay.svg";
 import NextIcon from "@icons/next.svg";
 import ForwardIcon from "@icons/forward.svg";
 import InputRange from "@/components/Atom/InputRange.vue";
 import BSTView from "@/components/Molecules/BSTView.vue";
-import Test1 from "@/components/Test1.vue";
+import TraceView from "@/components/Molecules/TraceView.vue";
 
 import { ref, computed, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
-import { useBSTStore } from "@/store";
+import { useBSTStore, useControllerStore } from "@/store";
+import Controller from "../Molecules/Controller.vue";
 
-const { codeTrace, codeIndex } = storeToRefs(useBSTStore());
+const { codeTrace, codeStep } = storeToRefs(useBSTStore());
+const { isPlay } = storeToRefs(useControllerStore());
 
 const speed = ref(1);
-const isPlay = ref(false);
 const intevalId = ref();
 
 const traceLength = computed(() => {
@@ -27,44 +29,45 @@ const playTrace = (speed: number) => {
   clearInterval(intevalId.value);
 
   intevalId.value = setInterval(() => {
-    if (codeIndex.value >= traceLength.value) {
-      pauseTrace();
+    if (codeStep.value >= traceLength.value) {
+      isPlay.value = false;
     } else {
-      codeIndex.value += 1;
+      codeStep.value += 1;
     }
-  }, 1000 / speed);
-};
-
-const pauseTrace = () => {
-  clearInterval(intevalId.value);
-  isPlay.value = false;
+  }, 1500 / speed);
 };
 
 const goToStart = () => {
-  codeIndex.value = 0;
+  codeStep.value = 0;
 };
 
 const goToEnd = () => {
-  codeIndex.value = traceLength.value;
+  codeStep.value = traceLength.value;
 };
 
 const previous = () => {
-  pauseTrace();
-  codeIndex.value -= 1;
+  isPlay.value = false;
+  if (codeStep.value <= 0) codeStep.value = 0;
+  else codeStep.value -= 1;
 };
 
 const next = () => {
-  pauseTrace();
-  codeIndex.value += 1;
+  isPlay.value = false;
+  if (codeStep.value >= traceLength.value) codeStep.value = traceLength.value;
+  else codeStep.value += 1;
 };
 
 const play = () => {
   isPlay.value = true;
-  playTrace(speed.value);
 };
 
 const pause = () => {
-  pauseTrace();
+  isPlay.value = false;
+};
+
+const replay = () => {
+  codeStep.value = 0;
+  isPlay.value = true;
 };
 
 const onKeyPress = (e: KeyboardEvent) => {
@@ -87,6 +90,14 @@ watch(speed, (newSpeed) => {
   if (isPlay.value) playTrace(newSpeed);
 });
 
+watch(isPlay, (isPlay) => {
+  if (isPlay) {
+    playTrace(speed.value);
+  } else {
+    clearInterval(intevalId.value);
+  }
+});
+
 onMounted(() => {
   window.addEventListener("keydown", onKeyPress);
 });
@@ -94,7 +105,8 @@ onMounted(() => {
 
 <template>
   <div id="main">
-    <Test1 />
+    <Controller />
+    <TraceView />
     <BSTView />
     <div class="bottom-bar">
       <div class="speed">
@@ -106,15 +118,20 @@ onMounted(() => {
           <div class="icon" @click="goToStart"><BackwardIcon /></div>
           <div class="icon" @click="previous"><PreviousIcon /></div>
           <div class="icon icon-center">
-            <PauseIcon v-if="isPlay" @click="pause" />
+            <ReplayIcon
+              v-if="codeTrace.codes.length > 0 && codeStep >= traceLength"
+              @click="replay"
+              style="width: 20px"
+            />
+            <PauseIcon v-else-if="isPlay" @click="pause" />
             <PlayIcon v-else @click="play" />
           </div>
           <div class="icon" @click="next"><NextIcon /></div>
           <div class="icon" @click="goToEnd"><ForwardIcon /></div>
         </div>
         <div class="progress">
-          <InputRange v-model:propValue.number="codeIndex" :max="traceLength" />
-          <span>{{ traceLength > 0 ? `${codeIndex + 1}/${traceLength + 1}` : `0/0` }}</span>
+          <InputRange v-model:propValue.number="codeStep" :max="traceLength" />
+          <span>{{ traceLength > 0 ? `${codeStep + 1}/${traceLength + 1}` : `0/0` }}</span>
         </div>
       </div>
       <div class="about"></div>

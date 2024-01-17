@@ -4,7 +4,8 @@ import { defineStore } from "pinia";
 interface IState {
   BST: INodes;
   codeTrace: ICodeTrace;
-  codeIndex: number;
+  codeStep: number;
+  action: string;
 }
 
 export const useBSTStore = defineStore("bst", {
@@ -14,7 +15,8 @@ export const useBSTStore = defineStore("bst", {
       codes: [],
       traces: [],
     },
-    codeIndex: 0,
+    codeStep: 0,
+    action: "",
   }),
   actions: {
     setBST(value: INodes) {
@@ -23,8 +25,11 @@ export const useBSTStore = defineStore("bst", {
     setCodeTrace(value: ICodeTrace) {
       this.codeTrace = value;
     },
-    setCodeIndex(value: number) {
-      this.codeIndex = value;
+    setCodeStep(value: number) {
+      this.codeStep = value;
+    },
+    setAction(value: string) {
+      this.action = value;
     },
   },
 });

@@ -10,4 +10,6 @@ export interface ITrace {
   codeIndex: Nullable<number>;
   nodes: { [key: string]: Nullable<UINode> };
   lines: { [key: string]: Nullable<UILine> };
+  nodeCount: number;
+  height: number;
 }

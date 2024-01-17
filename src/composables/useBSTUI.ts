@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import { ICodeTrace, INodes, ITrace, UILine, UINode } from "@/types";
-import { INSERT_TRACE, NODE_PADDING, SVG_PADDING } from "@/constants";
+import { INSERT_TRACE, SEARCH_TRACE, NODE_PADDING, SVG_PADDING } from "@/constants";
 
 export const useBSTUI = () => {
   let BST = ref<INodes>({});
@@ -31,11 +31,121 @@ export const useBSTUI = () => {
     return Object.keys(BST.value).length - 1;
   };
 
+  const getRootHeight = (BSTObj: INodes, root?: Nullable<number>) => {
+    if (root == null) return -1;
+    else
+      return (
+        Math.max(
+          getRootHeight(BSTObj, BSTObj[root]?.left),
+          getRootHeight(BSTObj, BSTObj[root]?.right)
+        ) + 1
+      );
+  };
+
   const resetCodeTrace = () => {
     codeTrace = {
       codes: [],
       traces: [],
     };
+  };
+
+  const search = (value: number) => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+
+    let trace = createTrace(tempBST);
+    trace.status = `The current BST rooted at ${tempBST["root"]?.value || "null"}.`;
+    codeTrace.codes = SEARCH_TRACE;
+    codeTrace.traces.push(trace);
+
+    let isFound = true;
+    let cur = tempBST["root"]?.value || null;
+    while (cur != null && cur != value) {
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Comparing ${value} with ${cur}.`;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "^",
+      } as UINode;
+      nodeTraversed[cur] = true;
+      codeTrace.traces.push(trace);
+
+      if (value < cur) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${value} is smaller than ${cur}.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = tempBST[cur]!.left != null ? 2 : 0;
+        codeTrace.traces.push(trace);
+
+        if (tempBST[cur]!.left != null) {
+          cur = tempBST[cur]!.left!;
+
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.lines[cur] = {
+            ...trace.lines[cur],
+            isTraver: true,
+          } as UILine;
+          lineTraversed[cur] = true;
+          trace.status = `So search on left.`;
+          trace.codeIndex = 3;
+          codeTrace.traces.push(trace);
+        } else {
+          isFound = false;
+          break;
+        }
+      } else if (value > cur) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${value} is greater than ${cur}.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = tempBST[cur]!.right != null ? 4 : 0;
+        codeTrace.traces.push(trace);
+
+        if (tempBST[cur]!.right != null) {
+          cur = tempBST[cur]!.right!;
+
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.lines[cur] = {
+            ...trace.lines[cur],
+            isTraver: true,
+          } as UILine;
+          lineTraversed[cur] = true;
+          trace.status = `So search on right.`;
+          trace.codeIndex = 5;
+          codeTrace.traces.push(trace);
+        } else {
+          isFound = false;
+          break;
+        }
+      }
+    }
+
+    if (cur != null && isFound) {
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Value ${value} is found.`;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "found",
+      } as UINode;
+      trace.codeIndex = 6;
+      codeTrace.traces.push(trace);
+    } else {
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Value ${value} is not found.`;
+      trace.codeIndex = 1;
+      codeTrace.traces.push(trace);
+    }
+
+    return codeTrace;
   };
 
   const insert = (value: number) => {
@@ -44,7 +154,7 @@ export const useBSTUI = () => {
     let nodeTraversed: { [key: string]: boolean } = {};
     let lineTraversed: { [key: string]: boolean } = {};
 
-    console.log("===============================");
+    // console.log("===============================");
 
     let trace = createTrace(tempBST);
     trace.status = `The current BST rooted at ${tempBST["root"]?.value || "null"}.`;
@@ -106,7 +216,7 @@ export const useBSTUI = () => {
               isTraver: true,
             } as UILine;
             lineTraversed[right] = true;
-            trace.status = `${value} is langer than ${parentValue}, so go right.`;
+            trace.status = `${value} is greater than ${parentValue}, so go right.`;
             trace.codeIndex = 5;
             codeTrace.traces.push(trace);
 
@@ -176,7 +286,7 @@ export const useBSTUI = () => {
 
     BST.value = tempBST;
 
-    console.log(codeTrace);
+    // console.log(codeTrace);
     return codeTrace;
   };
 
@@ -190,10 +300,15 @@ export const useBSTUI = () => {
       codeIndex: null,
       nodes: {},
       lines: {},
+      nodeCount: 0,
+      height: 0,
     };
 
+    let nodeCount = 0;
     for (let key in BSTObj) {
       if (key == "root") continue;
+
+      nodeCount++;
       trace.nodes[key] = {
         ...BSTObj[key],
         isShow: true,
@@ -227,6 +342,9 @@ export const useBSTUI = () => {
         isTraver: true,
       } as UILine;
     }
+
+    trace.nodeCount = nodeCount;
+    trace.height = getRootHeight(BSTObj, BSTObj["root"]?.value);
 
     return trace;
   };
@@ -268,6 +386,18 @@ export const useBSTUI = () => {
     }
   };
 
+  const bstToUI = () => {
+    resetCodeTrace();
+
+    calcPosition(BST.value);
+    const trace = createTrace(BST.value);
+
+    return {
+      codes: [],
+      traces: [trace],
+    } as ICodeTrace;
+  };
+
   const findNodeLevel = (
     BST: INodes,
     root: Nullable<number> = null,
@@ -294,12 +424,15 @@ export const useBSTUI = () => {
 
   return {
     BST,
+    bstToUI,
     setBST,
     resetBST,
+    getRootHeight,
     getMaxRank,
     getBST,
     getBSTRoot,
     insert,
+    search,
     findNodeLevel,
     findNodeRank,
   };
