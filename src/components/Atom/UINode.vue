@@ -25,7 +25,7 @@ const textStyle = computed(() => {
 const extraTextStyle = computed(() => {
   return {
     fontSize: NODE_TEXTSIZE + 2,
-    fill: props.node.isTraver ? "#ff8a27" : "#333",
+    fill: "#ff1818",
     opacity: props.node.isShow ? 1 : 0,
     transform: `translate(${props.node.position.x}px, ${extraTextY.value}px)`,
   };

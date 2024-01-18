@@ -1,6 +1,15 @@
 import { ref } from "vue";
 import { ICodeTrace, INodes, ITrace, UILine, UINode } from "@/types";
-import { INSERT_TRACE, SEARCH_TRACE, NODE_PADDING, SVG_PADDING } from "@/constants";
+import {
+  INSERT_TRACE,
+  SEARCH_TRACE,
+  NODE_PADDING,
+  SVG_PADDING,
+  SEARCH_MIN_TRACE,
+  SEARCH_MAX_TRACE,
+  PREDECESSOR_TRACE,
+  SUCCESSOR_TRACE,
+} from "@/constants";
 
 export const useBSTUI = () => {
   let BST = ref<INodes>({});
@@ -20,6 +29,12 @@ export const useBSTUI = () => {
 
   const getBST = () => {
     return BST.value;
+  };
+
+  const getBSTValues = () => {
+    return Object.keys(BST.value)
+      .map((v) => Number(v))
+      .filter((v) => !isNaN(v));
   };
 
   const getBSTRoot = () => {
@@ -142,6 +157,116 @@ export const useBSTUI = () => {
       trace = createTrace(tempBST, nodeTraversed, lineTraversed);
       trace.status = `Value ${value} is not found.`;
       trace.codeIndex = 1;
+      codeTrace.traces.push(trace);
+    }
+
+    return codeTrace;
+  };
+
+  const searchMin = () => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+
+    codeTrace.codes = SEARCH_MIN_TRACE;
+    let trace = createTrace(tempBST);
+    if (!tempBST["root"]?.value) {
+      trace.status = `Tree is empty, there is no minimum value.`;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+    } else {
+      trace.status = `The current BST rooted at ${tempBST["root"].value}.`;
+      codeTrace.traces.push(trace);
+
+      let cur = tempBST["root"]?.value;
+      while (tempBST[cur]?.left != null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${cur} is not the minimum value as it has a left child.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = 1;
+        nodeTraversed[cur] = true;
+        codeTrace.traces.push(trace);
+
+        cur = tempBST[cur]!.left!;
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Go left to check for smaller value...`;
+        trace.lines[cur] = {
+          ...trace.lines[cur],
+          isTraver: true,
+        } as UILine;
+        lineTraversed[cur] = true;
+        trace.codeIndex = 2;
+        codeTrace.traces.push(trace);
+      }
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Minimum value ${cur} found!`;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "min",
+      } as UINode;
+      trace.codeIndex = 3;
+      codeTrace.traces.push(trace);
+    }
+
+    return codeTrace;
+  };
+
+  const searchMax = () => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+
+    codeTrace.codes = SEARCH_MAX_TRACE;
+    let trace = createTrace(tempBST);
+    if (!tempBST["root"]?.value) {
+      trace.status = `Tree is empty, there is no maximum value.`;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+    } else {
+      trace.status = `The current BST rooted at ${tempBST["root"].value}.`;
+      codeTrace.traces.push(trace);
+
+      let cur = tempBST["root"]?.value;
+      while (tempBST[cur]?.right != null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${cur} is not the maximum value as it has a right child.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = 1;
+        nodeTraversed[cur] = true;
+        codeTrace.traces.push(trace);
+
+        cur = tempBST[cur]!.right!;
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Go right to check for larger value...`;
+        trace.lines[cur] = {
+          ...trace.lines[cur],
+          isTraver: true,
+        } as UILine;
+        lineTraversed[cur] = true;
+        trace.codeIndex = 2;
+        codeTrace.traces.push(trace);
+      }
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Maximum value ${cur} found!`;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "max",
+      } as UINode;
+      trace.codeIndex = 3;
       codeTrace.traces.push(trace);
     }
 
@@ -290,6 +415,355 @@ export const useBSTUI = () => {
     return codeTrace;
   };
 
+  const findPredecessor = (value: number) => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+
+    codeTrace.codes = PREDECESSOR_TRACE;
+    let trace = createTrace(tempBST);
+    if (Object.keys(tempBST).length <= 2) {
+      trace.status = `The tree must have 2 or more nodes to find predecessor!`;
+      codeTrace.traces.push(trace);
+
+      return codeTrace;
+    }
+
+    if (tempBST[value]?.left != null) {
+      const left = tempBST[value]!.left!;
+
+      trace.status = `This node has a left child, so go left.`;
+      trace.nodes[value] = {
+        ...trace.nodes[value],
+        isTraver: true,
+        extraText: "^",
+      } as UINode;
+      trace.lines[left] = {
+        ...trace.lines[left],
+        isTraver: true,
+      } as UILine;
+      nodeTraversed[value] = true;
+      lineTraversed[left] = true;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Check whether the left child has a right child.`;
+      trace.nodes[left] = {
+        ...trace.nodes[left],
+        isTraver: true,
+        extraText: "^",
+      } as UINode;
+      nodeTraversed[left] = true;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+
+      let cur = left;
+      while (tempBST[cur]?.right != null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${value} is not the predecessor node as it has a right child.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        nodeTraversed[cur] = true;
+        trace.codeIndex = 0;
+        codeTrace.traces.push(trace);
+
+        cur = tempBST[cur]!.right!;
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Go right to check for larger value.`;
+        trace.lines[cur] = {
+          ...trace.lines[cur],
+          isTraver: true,
+        } as UILine;
+        lineTraversed[cur] = true;
+        trace.codeIndex = 0;
+        codeTrace.traces.push(trace);
+      }
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Predecessor found!<br>The predecessor of ${value} is ${cur}.`;
+      trace.nodes[value] = {
+        ...trace.nodes[value],
+        isTraver: true,
+        extraText: "n",
+      } as UINode;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "predecessor of n",
+      } as UINode;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+    } else {
+      let t = value;
+      let p = tempBST[t]?.parent;
+
+      trace.status = `No left child found, so check the parent.`;
+      trace.nodes[t] = {
+        ...trace.nodes[t],
+        isTraver: true,
+        extraText: "T",
+      } as UINode;
+      if (p) {
+        trace.nodes[p] = {
+          ...trace.nodes[p],
+          extraText: "p",
+        } as UINode;
+      }
+      trace.lines[t] = {
+        ...trace.lines[t],
+        isTraver: true,
+      } as UILine;
+      nodeTraversed[t] = true;
+      lineTraversed[t] = true;
+      trace.codeIndex = 2;
+      codeTrace.traces.push(trace);
+
+      while (p != null && t == tempBST[p]?.left) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${p} is not the predecessor node as ${value} is part of the left sub-tree.`;
+        trace.nodes[p] = {
+          ...trace.nodes[p],
+          isTraver: true,
+        } as UINode;
+        nodeTraversed[p] = true;
+        trace.codeIndex = 3;
+        codeTrace.traces.push(trace);
+
+        t = p;
+        p = tempBST[t]?.parent;
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Go up to check for smaller value.`;
+        trace.nodes[t] = {
+          ...trace.nodes[t],
+          isTraver: true,
+          extraText: "t",
+        } as UINode;
+        if (p != null) {
+          trace.nodes[p] = {
+            ...trace.nodes[p],
+            isTraver: true,
+            extraText: "p",
+          } as UINode;
+          nodeTraversed[p] = true;
+          trace.lines[t] = {
+            ...trace.lines[t],
+            isTraver: true,
+          } as UILine;
+          lineTraversed[t] = true;
+        }
+        trace.codeIndex = 4;
+        codeTrace.traces.push(trace);
+      }
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      if (p != null) {
+        trace.status = `Predecessor found!<br>   The predecessor of ${value} is ${p}.`;
+        trace.nodes[value] = {
+          ...trace.nodes[value],
+          isTraver: true,
+          extraText: "n",
+        } as UINode;
+        trace.nodes[p] = {
+          ...trace.nodes[p],
+          isTraver: true,
+          extraText: "predecessor of n",
+        } as UINode;
+        trace.codeIndex = 6;
+        codeTrace.traces.push(trace);
+      } else {
+        trace.status = `Parent is null, so ${value} has no predecessor.`;
+        trace.nodes[value] = {
+          ...trace.nodes[value],
+          isTraver: true,
+          extraText: "n",
+        } as UINode;
+        trace.codeIndex = 5;
+        codeTrace.traces.push(trace);
+      }
+    }
+
+    return codeTrace;
+  };
+
+  const findSuccessor = (value: number) => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+
+    codeTrace.codes = SUCCESSOR_TRACE;
+    let trace = createTrace(tempBST);
+    if (Object.keys(tempBST).length <= 2) {
+      trace.status = `The tree must have 2 or more nodes to find successor!`;
+      codeTrace.traces.push(trace);
+
+      return codeTrace;
+    }
+
+    if (tempBST[value]?.right != null) {
+      trace.status = `This node has a right child, so go right.`;
+      trace.nodes[value] = {
+        ...trace.nodes[value],
+        isTraver: true,
+        extraText: "^",
+      } as UINode;
+      const right = tempBST[value]?.right!;
+      trace.lines[right] = {
+        ...trace.lines[right],
+        isTraver: true,
+      } as UILine;
+      nodeTraversed[value] = true;
+      lineTraversed[right] = true;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Check whether the right child has a left child.`;
+      trace.nodes[right] = {
+        ...trace.nodes[right],
+        isTraver: true,
+        extraText: "^",
+      } as UINode;
+      nodeTraversed[right] = true;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+
+      let cur = right;
+      while (tempBST[cur]?.left != null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${value} is not the successor node as it has a left child.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        nodeTraversed[cur] = true;
+        trace.codeIndex = 0;
+        codeTrace.traces.push(trace);
+
+        cur = tempBST[cur]!.left!;
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Go left to check for larger value.`;
+        trace.lines[cur] = {
+          ...trace.lines[cur],
+          isTraver: true,
+        } as UILine;
+        lineTraversed[cur] = true;
+        trace.codeIndex = 0;
+        codeTrace.traces.push(trace);
+      }
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Successor found!<br>The successor of ${value} is ${cur}.`;
+      trace.nodes[value] = {
+        ...trace.nodes[value],
+        isTraver: true,
+        extraText: "n",
+      } as UINode;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "successor of n",
+      } as UINode;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+    } else {
+      let t = value;
+      let p = tempBST[t]?.parent;
+
+      trace.status = `No right child found, so check the parent.`;
+      trace.nodes[t] = {
+        ...trace.nodes[t],
+        isTraver: true,
+        extraText: "T",
+      } as UINode;
+      if (p) {
+        trace.nodes[p] = {
+          ...trace.nodes[p],
+          extraText: "p",
+        } as UINode;
+      }
+      trace.lines[t] = {
+        ...trace.lines[t],
+        isTraver: true,
+      } as UILine;
+      nodeTraversed[t] = true;
+      lineTraversed[t] = true;
+      trace.codeIndex = 2;
+      codeTrace.traces.push(trace);
+
+      while (p != null && t == tempBST[p]?.right) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${p} is not the successor node as ${value} is part of the right sub-tree.`;
+        trace.nodes[p] = {
+          ...trace.nodes[p],
+          isTraver: true,
+        } as UINode;
+        nodeTraversed[p] = true;
+        trace.codeIndex = 3;
+        codeTrace.traces.push(trace);
+
+        t = p;
+        p = tempBST[t]?.parent;
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Go up to check for smaller value.`;
+        trace.nodes[t] = {
+          ...trace.nodes[t],
+          isTraver: true,
+          extraText: "t",
+        } as UINode;
+        if (p != null) {
+          trace.nodes[p] = {
+            ...trace.nodes[p],
+            isTraver: true,
+            extraText: "p",
+          } as UINode;
+          nodeTraversed[p] = true;
+          trace.lines[t] = {
+            ...trace.lines[t],
+            isTraver: true,
+          } as UILine;
+          lineTraversed[t] = true;
+        }
+        trace.codeIndex = 4;
+        codeTrace.traces.push(trace);
+      }
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      if (p != null) {
+        trace.status = `Successor found!<br>   The successor of ${value} is ${p}.`;
+        trace.nodes[value] = {
+          ...trace.nodes[value],
+          isTraver: true,
+          extraText: "n",
+        } as UINode;
+        trace.nodes[p] = {
+          ...trace.nodes[p],
+          isTraver: true,
+          extraText: "successor of n",
+        } as UINode;
+        trace.codeIndex = 6;
+        codeTrace.traces.push(trace);
+      } else {
+        trace.status = `Parent is null, so ${value} has no successor.`;
+        trace.nodes[value] = {
+          ...trace.nodes[value],
+          isTraver: true,
+          extraText: "n",
+        } as UINode;
+        trace.codeIndex = 5;
+        codeTrace.traces.push(trace);
+      }
+    }
+
+    return codeTrace;
+  };
+
   const createTrace = (
     BSTObj: INodes,
     nodeTraversed?: { [key: string]: boolean },
@@ -427,12 +901,17 @@ export const useBSTUI = () => {
     bstToUI,
     setBST,
     resetBST,
+    getBSTValues,
     getRootHeight,
     getMaxRank,
     getBST,
     getBSTRoot,
     insert,
     search,
+    searchMin,
+    searchMax,
+    findPredecessor,
+    findSuccessor,
     findNodeLevel,
     findNodeRank,
   };

@@ -12,11 +12,12 @@ const {
   BST,
   resetBST,
   bstToUI,
-  getRootHeight,
-  getMaxRank,
-  getBST,
-  getBSTRoot,
+  getBSTValues,
   search,
+  searchMin,
+  searchMax,
+  findPredecessor,
+  findSuccessor,
   insert,
   findNodeLevel,
   findNodeRank,
@@ -101,6 +102,52 @@ const handleSearch = () => {
   isShow.value = false;
 };
 
+const handleSearchMin = () => {
+  codeStep.value = 0;
+
+  action.value = `Search(Min)`;
+
+  codeTrace.value = searchMin();
+
+  isPlay.value = true;
+  isShow.value = false;
+};
+
+const handleSearchMax = () => {
+  codeStep.value = 0;
+
+  action.value = `Search(Max)`;
+
+  codeTrace.value = searchMax();
+
+  isPlay.value = true;
+  isShow.value = false;
+};
+
+const handleGetPredecessor = () => {
+  codeStep.value = 0;
+
+  action.value = `Predecessor(${randomN.value})`;
+
+  codeTrace.value = findPredecessor(randomN.value);
+
+  isPlay.value = true;
+  isShow.value = false;
+  activeExtend.value = null;
+};
+
+const handleGetSuccessor = () => {
+  codeStep.value = 0;
+
+  action.value = `Successor(${randomN.value})`;
+
+  codeTrace.value = findSuccessor(randomN.value);
+
+  isPlay.value = true;
+  isShow.value = false;
+  activeExtend.value = null;
+};
+
 const toggle = () => {
   if (isShow.value) activeExtend.value = null;
   isShow.value = !isShow.value;
@@ -110,6 +157,7 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
   if (extend != activeExtend.value) {
     activeExtend.value = extend;
 
+    const bstValues = getBSTValues();
     switch (extend) {
       case "Create":
         randomN.value = randomNumber(10, 30);
@@ -118,7 +166,7 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
       case "Predec-/Succ-essor":
       case "FindNode'sRank":
       case "FindNote'sLevel":
-        randomN.value = randomNumber(10, 100);
+        randomN.value = bstValues[randomNumber(0, bstValues.length)] || randomNumber(1, 100);
         break;
       case "Insert":
       case "Remove":
@@ -163,6 +211,13 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
           <div class="button" @click="handleSearch">
             <span>Search</span>
           </div>
+          <span>Extreme: </span>
+          <div class="button" @click="handleSearchMin">
+            <span>Min</span>
+          </div>
+          <div class="button" @click="handleSearchMax">
+            <span>Max</span>
+          </div>
         </div>
       </div>
       <div class="item" @click="toggleExtend('Insert')">
@@ -188,9 +243,20 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
         <span>Traverse(root)</span>
         <div class="extend"></div>
       </div>
-      <div class="item">
+      <div class="item" @click="toggleExtend('Predec-/Succ-essor')">
         <span>Predec-/Succ-essor(n)</span>
-        <div class="extend"></div>
+        <div v-if="activeExtend == 'Predec-/Succ-essor'" class="extend">
+          <div class="input">
+            <span>n = </span>
+            <input class="small" type="number" v-model="randomN" />
+          </div>
+          <div class="button" @click="handleGetPredecessor">
+            <span>Get Predecessor</span>
+          </div>
+          <div class="button" @click="handleGetSuccessor">
+            <span>Get Successor</span>
+          </div>
+        </div>
       </div>
       <div class="item">
         <span>Find node at rank(r)</span>

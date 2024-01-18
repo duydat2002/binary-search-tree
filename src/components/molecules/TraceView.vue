@@ -52,7 +52,7 @@ const toggleTrace = () => {
         <LeftIcon class="icon" />
       </div>
       <div class="content">
-        <span>{{ status }}</span>
+        <span v-html="status"></span>
       </div>
     </div>
     <div class="trace-container container" :class="{ active: traceActive }">
@@ -116,8 +116,18 @@ const toggleTrace = () => {
   padding: 10px;
 }
 
+.status-container .toggle,
+.status-container .content {
+  background: #52bc69;
+}
+
 .trace-container {
   min-height: 200px;
+}
+
+.trace-container .toggle,
+.trace-container .content {
+  background: #2ebbd1;
 }
 
 .toggle {
@@ -125,7 +135,6 @@ const toggleTrace = () => {
   align-items: center;
   justify-content: center;
   width: 40px;
-  background: #fa7f7f;
   cursor: pointer;
 }
 
@@ -142,7 +151,6 @@ const toggleTrace = () => {
   margin-right: 10px;
   display: flex;
   flex-direction: column;
-  background: #fa7f7f;
   color: #fff;
   width: 0px;
   transition: all 0.5s;

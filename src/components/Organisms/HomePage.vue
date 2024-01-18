@@ -9,11 +9,11 @@ import ForwardIcon from "@icons/forward.svg";
 import InputRange from "@/components/Atom/InputRange.vue";
 import BSTView from "@/components/Molecules/BSTView.vue";
 import TraceView from "@/components/Molecules/TraceView.vue";
+import Controller from "@/components/Molecules/Controller.vue";
 
 import { ref, computed, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useBSTStore, useControllerStore } from "@/store";
-import Controller from "../Molecules/Controller.vue";
 
 const { codeTrace, codeStep } = storeToRefs(useBSTStore());
 const { isPlay } = storeToRefs(useControllerStore());
