@@ -9,6 +9,7 @@ import {
   SEARCH_MAX_TRACE,
   PREDECESSOR_TRACE,
   SUCCESSOR_TRACE,
+  REMOVE_TRACE,
 } from "@/constants";
 
 export const useBSTUI = () => {
@@ -279,8 +280,6 @@ export const useBSTUI = () => {
     let nodeTraversed: { [key: string]: boolean } = {};
     let lineTraversed: { [key: string]: boolean } = {};
 
-    // console.log("===============================");
-
     let trace = createTrace(tempBST);
     trace.status = `The current BST rooted at ${tempBST["root"]?.value || "null"}.`;
     codeTrace.codes = INSERT_TRACE;
@@ -411,7 +410,271 @@ export const useBSTUI = () => {
 
     BST.value = tempBST;
 
-    // console.log(codeTrace);
+    return codeTrace;
+  };
+
+  const remove = (value: number) => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+
+    let trace: ITrace = createTrace(tempBST);
+    codeTrace.codes = REMOVE_TRACE;
+
+    let isFound = true;
+    if (tempBST["root"] == null) {
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `The current BST rooted at null.`;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+      return codeTrace;
+    }
+
+    let cur = tempBST["root"]!.value;
+    while (cur != null && cur != value) {
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Searching for node ${value} to remove.`;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "^",
+      } as UINode;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Searching for node ${value} to remove.`;
+      trace.codeIndex = 0;
+      if (value < cur) {
+        if (tempBST[cur]!.left != null) {
+          cur = tempBST[cur]!.left!;
+
+          trace.lines[cur] = {
+            ...trace.lines[cur],
+            isTraver: true,
+          } as UILine;
+          lineTraversed[cur] = true;
+        } else {
+          isFound = false;
+          break;
+        }
+      } else {
+        if (tempBST[cur]!.right != null) {
+          cur = tempBST[cur]!.right!;
+
+          trace.lines[cur] = {
+            ...trace.lines[cur],
+            isTraver: true,
+          } as UILine;
+          lineTraversed[cur] = true;
+        } else {
+          isFound = false;
+          break;
+        }
+      }
+      codeTrace.traces.push(trace);
+    }
+
+    if (cur != null && isFound) {
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Node ${value} is found.`;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "found",
+      } as UINode;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+
+      let left = tempBST[cur]?.left;
+      let right = tempBST[cur]?.right;
+      if (tempBST[cur]!.quantity > 1) {
+        tempBST[cur]!.quantity -= 1;
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `${value} is equal to ${value}, so just decrement its quantity.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "dec",
+        } as UINode;
+        trace.codeIndex = 1;
+        codeTrace.traces.push(trace);
+      } else if (left == null && right == null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Node ${value} has no children (a leaf).`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "remove",
+        } as UINode;
+        trace.codeIndex = 2;
+        codeTrace.traces.push(trace);
+
+        const parent = tempBST[cur]?.parent;
+        if (parent != null) {
+          if (cur < parent) tempBST[parent]!.left = null;
+          else tempBST[parent]!.right = null;
+        } else {
+          tempBST["root"] = null;
+        }
+        delete tempBST[cur];
+        delete nodeTraversed[cur];
+        delete lineTraversed[cur];
+        calcPosition(tempBST);
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Remove leaf ${value}.`;
+        trace.codeIndex = 3;
+        codeTrace.traces.push(trace);
+      } else if (left != null && right != null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Node ${value} only has two child.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "remove",
+        } as UINode;
+        trace.codeIndex = 6;
+        codeTrace.traces.push(trace);
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Finding successor of ${value}.`;
+        trace.nodes[value] = {
+          ...trace.nodes[value],
+          extraText: "remove",
+        } as UINode;
+        trace.nodes[right] = {
+          ...trace.nodes[right],
+          isTraver: true,
+        } as UINode;
+        trace.lines[right] = {
+          ...trace.lines[right],
+          isTraver: true,
+        } as UILine;
+        nodeTraversed[right] = true;
+        lineTraversed[right] = true;
+        trace.codeIndex = 6;
+        codeTrace.traces.push(trace);
+
+        cur = right;
+
+        while (tempBST[cur]?.left != null) {
+          left = tempBST[cur]!.left!;
+
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `Finding successor of ${value}.`;
+          trace.nodes[value] = {
+            ...trace.nodes[value],
+            extraText: "remove",
+          } as UINode;
+          trace.nodes[left] = {
+            ...trace.nodes[left],
+            isTraver: true,
+          } as UINode;
+          trace.lines[left] = {
+            ...trace.lines[left],
+            isTraver: true,
+          } as UILine;
+          nodeTraversed[left] = true;
+          lineTraversed[left] = true;
+          trace.codeIndex = 6;
+          codeTrace.traces.push(trace);
+
+          cur = left;
+        }
+
+        if (tempBST["root"]!.value == value) {
+          delete lineTraversed[cur];
+          tempBST["root"]!.value = cur;
+        }
+
+        let valueParent = tempBST[value]?.parent;
+        let sucParent = tempBST[cur]?.parent!;
+        let sucRight = tempBST[cur]?.right || null;
+        left = tempBST[value]?.left!;
+        right = tempBST[value]?.right!;
+
+        if (valueParent)
+          if (value < valueParent) tempBST[valueParent]!.left = cur;
+          else tempBST[valueParent]!.right = cur;
+        tempBST[left]!.parent = cur;
+        tempBST[right]!.parent = cur;
+
+        tempBST[cur]!.parent = valueParent || null;
+        tempBST[cur]!.left = left;
+
+        if (tempBST[sucParent]!.left == cur) {
+          tempBST[cur]!.right = right;
+          tempBST[sucParent]!.left = sucRight;
+          if (sucRight) tempBST[sucRight]!.parent = sucParent;
+        }
+
+        delete tempBST[value];
+        delete nodeTraversed[value];
+        delete lineTraversed[value];
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Replace node ${value} with its successor.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          extraText: "successor",
+        } as UINode;
+        trace.lines[left]!.isTraver = true;
+        trace.codeIndex = 6;
+        codeTrace.traces.push(trace);
+
+        calcPosition(tempBST);
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Replace node ${value} with its successor.`;
+        trace.lines[left]!.isTraver = true;
+        trace.codeIndex = 6;
+        codeTrace.traces.push(trace);
+      } else {
+        const childName = left != null ? "left" : "right";
+        const child = (left || right)!;
+        const parent = tempBST[cur]!.parent;
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Node ${value} only has a ${childName} child.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "remove",
+        } as UINode;
+        trace.codeIndex = 4;
+        codeTrace.traces.push(trace);
+
+        tempBST[child]!.parent = parent;
+        if (parent != null) {
+          tempBST[parent]![value < parent ? "left" : "right"] = child;
+        } else {
+          tempBST["root"]!.value = child;
+        }
+        delete tempBST[value];
+        delete nodeTraversed[value];
+        delete lineTraversed[value];
+        calcPosition(tempBST);
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Remove node ${value} and connect its parent to its ${childName} child.`;
+        trace.nodes[child]!.isTraver = true;
+        if (trace.lines[child] != null) {
+          trace.lines[child]!.isTraver = true;
+        }
+        trace.codeIndex = 5;
+        codeTrace.traces.push(trace);
+      }
+    } else {
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `Node ${value} is not in BST.`;
+      trace.codeIndex = 0;
+      codeTrace.traces.push(trace);
+    }
+
+    BST.value = tempBST;
+
     return codeTrace;
   };
 
@@ -836,7 +1099,7 @@ export const useBSTUI = () => {
     }
 
     function calcLevel(root?: Nullable<number>, level: number = 0) {
-      if (root != null) {
+      if (root != null && BST[root] != null) {
         BST[root] = {
           ...BST[root],
           level,
@@ -907,6 +1170,7 @@ export const useBSTUI = () => {
     getBST,
     getBSTRoot,
     insert,
+    remove,
     search,
     searchMin,
     searchMax,

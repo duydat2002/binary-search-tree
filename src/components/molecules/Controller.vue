@@ -19,6 +19,7 @@ const {
   findPredecessor,
   findSuccessor,
   insert,
+  remove,
   findNodeLevel,
   findNodeRank,
 } = useBSTUI();
@@ -28,8 +29,9 @@ const { isPlay } = storeToRefs(useControllerStore());
 const isShow = ref(true);
 const activeExtend = ref<Nullable<TExtend>>(null);
 const inserError = ref(false);
+const removeError = ref(false);
 const listNode = ref(randomArrNumber(5, 10, 50).join(", "));
-const randomN = ref(randomNumber(10, 30));
+const randomN = ref(0);
 
 const emptyBST = () => {
   resetBST();
@@ -148,6 +150,41 @@ const handleGetSuccessor = () => {
   activeExtend.value = null;
 };
 
+const handleRemove = () => {
+  // Check
+  const arr = listNode.value.split(",");
+  const hasNaN = arr.some((a) => a != "" && isNaN(Number(a)));
+
+  if (hasNaN) {
+    removeError.value = true;
+  } else {
+    removeError.value = false;
+
+    codeStep.value = 0;
+
+    let codes: string[] = [];
+    const traces: ITrace[] = [];
+
+    arr.forEach((n) => {
+      if (n != "") {
+        const codeTrace = remove(Number(n));
+        codes = codeTrace.codes;
+        traces.push(...codeTrace.traces);
+      }
+    });
+
+    action.value = `Remove(${arr.filter((a) => a != "").join(",")})`;
+
+    codeTrace.value = {
+      codes,
+      traces,
+    };
+
+    isPlay.value = true;
+    isShow.value = false;
+  }
+};
+
 const toggle = () => {
   if (isShow.value) activeExtend.value = null;
   isShow.value = !isShow.value;
@@ -235,9 +272,20 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
           >
         </div>
       </div>
-      <div class="item">
+      <div class="item" @click="toggleExtend('Remove')">
         <span>Remove(n)</span>
-        <div class="extend"></div>
+        <div v-if="activeExtend == 'Remove'" class="extend">
+          <div class="input">
+            <span>n = </span>
+            <input v-model="listNode" />
+          </div>
+          <div class="button" @click="handleRemove">
+            <span>Remove</span>
+          </div>
+          <span v-if="removeError" class="error"
+            >Please fill in a number or comma-separated array of numbers!</span
+          >
+        </div>
       </div>
       <div class="item">
         <span>Traverse(root)</span>
@@ -280,7 +328,7 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
   left: 0;
   bottom: 100px;
   display: flex;
-  z-index: 10;
+  z-index: 20;
   overflow: hidden;
 }
 
