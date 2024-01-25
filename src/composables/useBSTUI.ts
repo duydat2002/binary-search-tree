@@ -10,6 +10,9 @@ import {
   PREDECESSOR_TRACE,
   SUCCESSOR_TRACE,
   REMOVE_TRACE,
+  PREORDER_TRACE,
+  INORDER_TRACE,
+  POSTORDER_TRACE,
 } from "@/constants";
 
 export const useBSTUI = () => {
@@ -1027,6 +1030,181 @@ export const useBSTUI = () => {
     return codeTrace;
   };
 
+  const traversal = (mode: "Preorder" | "Inorder" | "Postorder") => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+    const values: number[] = [];
+
+    let codeIndexVisit = 1;
+    let codeIndexLeft = 2;
+    let codeIndexRight = 3;
+    codeTrace.codes = PREORDER_TRACE;
+
+    if (mode == "Inorder") {
+      codeIndexVisit = 2;
+      codeIndexLeft = 1;
+      codeIndexRight = 3;
+      codeTrace.codes = INORDER_TRACE;
+    } else if (mode == "Postorder") {
+      codeIndexVisit = 3;
+      codeIndexLeft = 1;
+      codeIndexRight = 2;
+      codeTrace.codes = POSTORDER_TRACE;
+    }
+
+    let cur = tempBST["root"]?.value || null;
+
+    let trace = createTrace(tempBST);
+    if (cur == null) {
+      trace.status = `The Binary Search Tree is empty.<br>Return empty result.`;
+      codeTrace.traces.push(trace);
+      return codeTrace;
+    } else {
+      const root = cur;
+
+      trace.status = `The root ${root} is not null.`;
+      trace.nodes[root] = {
+        ...trace.nodes[root],
+        isTraver: true,
+        extraText: "root",
+      } as UINode;
+      codeTrace.traces.push(trace);
+
+      traversalRecursion(cur, mode);
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `${mode} traversal of the BST is complete.<br>Visitation sequence: ${values.join(
+        ", "
+      )}.`;
+      trace.nodes[root] = {
+        ...trace.nodes[root],
+        isTraver: true,
+        extraText: "root",
+      } as UINode;
+      codeTrace.traces.push(trace);
+    }
+
+    return codeTrace;
+
+    function traversalRecursion(cur: number, mode: "Preorder" | "Inorder" | "Postorder") {
+      const left = tempBST[cur]?.left;
+      const right = tempBST[cur]?.right;
+
+      nodeTraversed[cur] = true;
+
+      if (mode == "Preorder") {
+        values.push(cur);
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Visit node ${cur}.<br>Visitation sequence: ${values.join(", ")}.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = codeIndexVisit;
+        codeTrace.traces.push(trace);
+      }
+
+      if (left == null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `The left child of node ${cur} is empty.<br>Return empty.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = 0;
+        codeTrace.traces.push(trace);
+      } else {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `The left child of node ${cur} is ${left} (not null).<br>So recurse to the left child.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.lines[left] = {
+          ...trace.lines[left],
+          isTraver: true,
+        } as UILine;
+        lineTraversed[left] = true;
+        trace.codeIndex = codeIndexLeft;
+        codeTrace.traces.push(trace);
+
+        traversalRecursion(left, mode);
+      }
+
+      if (mode == "Inorder") {
+        values.push(cur);
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Visit node ${cur}.<br>Visitation sequence: ${values.join(", ")}.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = codeIndexVisit;
+        codeTrace.traces.push(trace);
+      }
+
+      if (right == null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `The right child of node ${cur} is empty.<br>Return empty.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = 0;
+        codeTrace.traces.push(trace);
+      } else {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `The right child of node ${cur} is ${right} (not null).<br>So recurse to the right child.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.lines[right] = {
+          ...trace.lines[right],
+          isTraver: true,
+        } as UILine;
+        lineTraversed[right] = true;
+        trace.codeIndex = codeIndexRight;
+        codeTrace.traces.push(trace);
+
+        traversalRecursion(right, mode);
+      }
+
+      if (mode == "Postorder") {
+        values.push(cur);
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Visit node ${cur}.<br>Visitation sequence: ${values.join(", ")}.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: "^",
+        } as UINode;
+        trace.codeIndex = codeIndexVisit;
+        codeTrace.traces.push(trace);
+      }
+
+      trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+      trace.status = `${mode} traversal of ${cur} is complete.`;
+      trace.nodes[cur] = {
+        ...trace.nodes[cur],
+        isTraver: true,
+        extraText: "^",
+      } as UINode;
+      codeTrace.traces.push(trace);
+    }
+  };
+
   const createTrace = (
     BSTObj: INodes,
     nodeTraversed?: { [key: string]: boolean },
@@ -1174,6 +1352,7 @@ export const useBSTUI = () => {
     search,
     searchMin,
     searchMax,
+    traversal,
     findPredecessor,
     findSuccessor,
     findNodeLevel,

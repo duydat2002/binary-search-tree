@@ -1,3 +1,24 @@
+export const PREORDER_TRACE = [
+  "if this is null, return",
+  "visit this",
+  "Preorder(left)",
+  "Preorder(right)",
+];
+
+export const INORDER_TRACE = [
+  "if this is null, return",
+  "Inorder(left)",
+  "visit this",
+  "Inorder(right)",
+];
+
+export const POSTORDER_TRACE = [
+  "if this is null, return",
+  "Postorder(left)",
+  "Postorder(right)",
+  "visit this",
+];
+
 export const INSERT_TRACE = [
   "if insertion point is found",
   "   insert to this node",

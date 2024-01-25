@@ -20,11 +20,12 @@ const {
   findSuccessor,
   insert,
   remove,
+  traversal,
   findNodeLevel,
   findNodeRank,
 } = useBSTUI();
 const { codeTrace, codeStep, action } = storeToRefs(useBSTStore());
-const { isPlay } = storeToRefs(useControllerStore());
+const { isPlay, isShowStatus, isShowTrace } = storeToRefs(useControllerStore());
 
 const isShow = ref(true);
 const activeExtend = ref<Nullable<TExtend>>(null);
@@ -90,6 +91,8 @@ const handleInsert = () => {
 
     isPlay.value = true;
     isShow.value = false;
+    isShowStatus.value = true;
+    isShowTrace.value = true;
   }
 };
 
@@ -102,6 +105,8 @@ const handleSearch = () => {
 
   isPlay.value = true;
   isShow.value = false;
+  isShowStatus.value = true;
+  isShowTrace.value = true;
 };
 
 const handleSearchMin = () => {
@@ -113,6 +118,8 @@ const handleSearchMin = () => {
 
   isPlay.value = true;
   isShow.value = false;
+  isShowStatus.value = true;
+  isShowTrace.value = true;
 };
 
 const handleSearchMax = () => {
@@ -124,6 +131,8 @@ const handleSearchMax = () => {
 
   isPlay.value = true;
   isShow.value = false;
+  isShowStatus.value = true;
+  isShowTrace.value = true;
 };
 
 const handleGetPredecessor = () => {
@@ -136,6 +145,8 @@ const handleGetPredecessor = () => {
   isPlay.value = true;
   isShow.value = false;
   activeExtend.value = null;
+  isShowStatus.value = true;
+  isShowTrace.value = true;
 };
 
 const handleGetSuccessor = () => {
@@ -147,6 +158,8 @@ const handleGetSuccessor = () => {
 
   isPlay.value = true;
   isShow.value = false;
+  isShowStatus.value = true;
+  isShowTrace.value = true;
   activeExtend.value = null;
 };
 
@@ -182,7 +195,23 @@ const handleRemove = () => {
 
     isPlay.value = true;
     isShow.value = false;
+    isShowStatus.value = true;
+    isShowTrace.value = true;
   }
+};
+
+const handleTraverse = (mode: "Preorder" | "Inorder" | "Postorder") => {
+  codeStep.value = 0;
+
+  action.value = `${mode} Traversal`;
+
+  codeTrace.value = traversal(mode);
+
+  isPlay.value = true;
+  isShow.value = false;
+  isShowStatus.value = true;
+  isShowTrace.value = true;
+  activeExtend.value = null;
 };
 
 const toggle = () => {
@@ -287,9 +316,19 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
           >
         </div>
       </div>
-      <div class="item">
+      <div class="item" @click="toggleExtend('Traverse')">
         <span>Traverse(root)</span>
-        <div class="extend"></div>
+        <div v-if="activeExtend == 'Traverse'" class="extend">
+          <div class="button" @click="handleTraverse('Preorder')">
+            <span>Preorder</span>
+          </div>
+          <div class="button" @click="handleTraverse('Inorder')">
+            <span>Inorder</span>
+          </div>
+          <div class="button" @click="handleTraverse('Postorder')">
+            <span>Postorder</span>
+          </div>
+        </div>
       </div>
       <div class="item" @click="toggleExtend('Predec-/Succ-essor')">
         <span>Predec-/Succ-essor(n)</span>

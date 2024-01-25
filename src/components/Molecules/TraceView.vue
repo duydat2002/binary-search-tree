@@ -3,12 +3,10 @@ import LeftIcon from "@icons/left.svg";
 
 import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
-import { useBSTStore } from "@/store";
+import { useBSTStore, useControllerStore } from "@/store";
 
 const { codeTrace, codeStep, action } = storeToRefs(useBSTStore());
-
-const statusActive = ref(false);
-const traceActive = ref(false);
+const { isShowStatus, isShowTrace } = storeToRefs(useControllerStore());
 
 const bstInfo = computed(() => {
   const nodeCount = codeTrace.value.traces[codeStep.value]?.nodeCount;
@@ -31,11 +29,11 @@ const codeIndex = computed(() => {
 });
 
 const toggleStatus = () => {
-  statusActive.value = !statusActive.value;
+  isShowStatus.value = !isShowStatus.value;
 };
 
 const toggleTrace = () => {
-  traceActive.value = !traceActive.value;
+  isShowTrace.value = !isShowTrace.value;
 };
 </script>
 
@@ -47,7 +45,7 @@ const toggleTrace = () => {
     <div class="action-container">
       <span>{{ action }}</span>
     </div>
-    <div class="status-container container" :class="{ active: statusActive }">
+    <div class="status-container container" :class="{ active: isShowStatus }">
       <div class="toggle" @click="toggleStatus">
         <LeftIcon class="icon" />
       </div>
@@ -55,7 +53,7 @@ const toggleTrace = () => {
         <span v-html="status"></span>
       </div>
     </div>
-    <div class="trace-container container" :class="{ active: traceActive }">
+    <div class="trace-container container" :class="{ active: isShowTrace }">
       <div class="toggle" @click="toggleTrace">
         <LeftIcon class="icon" />
       </div>
