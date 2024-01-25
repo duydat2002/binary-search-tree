@@ -1,19 +1,19 @@
 export const PREORDER_TRACE = [
-  "if this is null, return",
+  "if this node is null, return",
   "visit this",
   "Preorder(left)",
   "Preorder(right)",
 ];
 
 export const INORDER_TRACE = [
-  "if this is null, return",
+  "if this node is null, return",
   "Inorder(left)",
   "visit this",
   "Inorder(right)",
 ];
 
 export const POSTORDER_TRACE = [
-  "if this is null, return",
+  "if this node is null, return",
   "Postorder(left)",
   "Postorder(right)",
   "visit this",
@@ -81,4 +81,22 @@ export const REMOVE_TRACE = [
   "else if n has 1 child",
   "   bypass n",
   "else replace n with successor",
+];
+
+export const FIND_NODE_AT_RANK_TRACE = [
+  "if this node is null or rank <= 0, return null",
+  "r = rank of this node, ls = size of this left subtree",
+  "if r == ls + 1, return this node",
+  "else if r <= ls find node whose rank is r on left",
+  "else find node whose rank is (r-ls-1) on right",
+];
+
+export const FIND_NODE_RANK_TRACE = [
+  "if this node is null, return 0",
+  "ls = size of this left subtree",
+  `if value < this node value,<br>
+     return node rank at left child`,
+  `else if r > this node value,<br>
+     return ls + 1 + node rank at right child`,
+  "else return ls + 1",
 ];

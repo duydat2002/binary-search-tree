@@ -63,8 +63,8 @@ const toggleTrace = () => {
           :key="index"
           class="code-item"
           :class="{ active: codeIndex == index }"
-          >{{ code }}</span
-        >
+          v-html="code"
+        ></span>
       </div>
     </div>
   </div>

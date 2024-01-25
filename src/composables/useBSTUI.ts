@@ -13,6 +13,8 @@ import {
   PREORDER_TRACE,
   INORDER_TRACE,
   POSTORDER_TRACE,
+  FIND_NODE_AT_RANK_TRACE,
+  FIND_NODE_RANK_TRACE,
 } from "@/constants";
 
 export const useBSTUI = () => {
@@ -1060,7 +1062,6 @@ export const useBSTUI = () => {
     if (cur == null) {
       trace.status = `The Binary Search Tree is empty.<br>Return empty result.`;
       codeTrace.traces.push(trace);
-      return codeTrace;
     } else {
       const root = cur;
 
@@ -1205,6 +1206,233 @@ export const useBSTUI = () => {
     }
   };
 
+  const findNodeAtRank = (nodeRank: number) => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+    const maxRank = getMaxRank();
+
+    let cur = tempBST["root"]?.value || null;
+
+    let trace = createTrace(tempBST);
+    codeTrace.codes = FIND_NODE_AT_RANK_TRACE;
+    if (cur == null) {
+      trace.status = `The Binary Search Tree is empty.`;
+      codeTrace.traces.push(trace);
+    } else if (nodeRank <= 0 || nodeRank > maxRank) {
+      trace.status = `Can only find nodes at rank from 1 to ${maxRank}.`;
+      codeTrace.traces.push(trace);
+    } else {
+      findNodeRecursion(cur, nodeRank);
+    }
+
+    return codeTrace;
+
+    function findNodeRecursion(cur: Nullable<number>, rank: number) {
+      if (cur == null || rank <= 0) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Node at rank ${nodeRank} is not found.`;
+        trace.codeIndex = 0;
+        codeTrace.traces.push(trace);
+      } else {
+        const leftSize = tempBST[cur]!.leftSize;
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Comparing r with ls (${rank} with ${leftSize}).`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: `ls = ${leftSize}`,
+        } as UINode;
+        trace.codeIndex = 1;
+        codeTrace.traces.push(trace);
+
+        if (rank == leftSize + 1) {
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `Node at rank ${nodeRank} is found.<br>Node is ${cur}`;
+          trace.nodes[cur] = {
+            ...trace.nodes[cur],
+            isTraver: true,
+            extraText: "found",
+          } as UINode;
+          trace.codeIndex = 2;
+          codeTrace.traces.push(trace);
+        } else if (rank <= leftSize) {
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `Node ${cur} has rank ${
+            leftSize + 1
+          } in this subtree (root = ${cur}), it > ${rank}.<br>Find node whose rank is ${rank} on left.`;
+          trace.nodes[cur] = {
+            ...trace.nodes[cur],
+            isTraver: true,
+            extraText: `ls = ${leftSize}`,
+          } as UINode;
+          trace.codeIndex = 3;
+          codeTrace.traces.push(trace);
+
+          const left = tempBST[cur]?.left!;
+
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `At subtree rooted at node ${left},<br>Find node whose rank is ${rank} on this subtree`;
+          trace.nodes[left] = {
+            ...trace.nodes[left],
+            isTraver: true,
+            extraText: `^`,
+          } as UINode;
+          trace.codeIndex = 3;
+          codeTrace.traces.push(trace);
+
+          findNodeRecursion(left, rank);
+        } else {
+          const rankFind = rank - leftSize - 1;
+
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `Node ${cur} has rank ${
+            leftSize + 1
+          } in this subtree (root = ${cur}), it < ${rank}.<br>Find node whose rank is ${rank}-${leftSize}-1 = ${rankFind} on right.`;
+          trace.nodes[cur] = {
+            ...trace.nodes[cur],
+            isTraver: true,
+            extraText: `ls = ${leftSize}`,
+          } as UINode;
+          trace.codeIndex = 4;
+          codeTrace.traces.push(trace);
+
+          rank = rankFind;
+
+          const right = tempBST[cur]?.right!;
+
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `At subtree rooted at node ${right},<br>Find node whose rank is ${rank} on this subtree`;
+          trace.nodes[right] = {
+            ...trace.nodes[right],
+            isTraver: true,
+            extraText: `^`,
+          } as UINode;
+          trace.codeIndex = 4;
+          codeTrace.traces.push(trace);
+
+          findNodeRecursion(right, rank);
+        }
+      }
+    }
+  };
+
+  const findNodeRank = (value: number) => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+
+    let cur = tempBST["root"]?.value || null;
+
+    let trace = createTrace(tempBST);
+    codeTrace.codes = FIND_NODE_RANK_TRACE;
+
+    if (cur == null) {
+      trace.status = `The Binary Search Tree is empty.`;
+      codeTrace.traces.push(trace);
+    } else {
+      const rank = findNodeRankRecursion(cur, value);
+      if (!isNaN(rank)) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Node ${value} has rank ${rank}.`;
+        trace.nodes[value] = {
+          ...trace.nodes[value],
+          isTraver: true,
+          extraText: `r = ${rank}`,
+        } as UINode;
+        codeTrace.traces.push(trace);
+      } else {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Value ${value} is not found.`;
+        codeTrace.traces.push(trace);
+      }
+    }
+
+    return codeTrace;
+
+    function findNodeRankRecursion(cur: Nullable<number>, value: number) {
+      if (cur == null) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Node is null. Return 0`;
+        trace.codeIndex = 0;
+        codeTrace.traces.push(trace);
+
+        return undefined;
+      } else {
+        const leftSize = tempBST[cur]!.leftSize;
+        nodeTraversed[cur] = true;
+
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Comparing ${cur} with ${value}.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: `ls = ${leftSize}`,
+        } as UINode;
+        trace.codeIndex = 1;
+        codeTrace.traces.push(trace);
+
+        if (value < cur) {
+          const left = tempBST[cur]!.left;
+
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `${value} is smaller than ${cur}. Return node rank at left child.`;
+          trace.nodes[cur] = {
+            ...trace.nodes[cur],
+            extraText: "^",
+          } as UINode;
+          if (left != null) {
+            trace.lines[left] = {
+              ...trace.lines[left],
+              isTraver: true,
+            } as UILine;
+            lineTraversed[left] = true;
+          }
+          trace.codeIndex = 2;
+          codeTrace.traces.push(trace);
+
+          return findNodeRankRecursion(left, value);
+        } else if (value > cur) {
+          const right = tempBST[cur]!.right;
+
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `${value} is greater than ${cur}. Return ls + 1 + node rank at right child.`;
+          trace.nodes[cur] = {
+            ...trace.nodes[cur],
+            extraText: "^",
+          } as UINode;
+          if (right != null) {
+            trace.lines[right] = {
+              ...trace.lines[right],
+              isTraver: true,
+            } as UILine;
+            lineTraversed[right] = true;
+          }
+          trace.codeIndex = 3;
+          codeTrace.traces.push(trace);
+
+          return leftSize + 1 + findNodeRankRecursion(right, value);
+        } else {
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `${value} is equal ${cur}. Return ls + 1.`;
+          trace.nodes[cur] = {
+            ...trace.nodes[cur],
+            extraText: "^",
+          } as UINode;
+          trace.codeIndex = 4;
+          codeTrace.traces.push(trace);
+
+          return leftSize + 1;
+        }
+      }
+    }
+  };
+
+  const findNodeLevel = () => {};
+
   const createTrace = (
     BSTObj: INodes,
     nodeTraversed?: { [key: string]: boolean },
@@ -1313,29 +1541,29 @@ export const useBSTUI = () => {
     } as ICodeTrace;
   };
 
-  const findNodeLevel = (
-    BST: INodes,
-    root: Nullable<number> = null,
-    value: number,
-    level: number = 0
-  ): number => {
-    if (root == null) return 0;
-    else if (root == value) return level;
-    else {
-      return (
-        findNodeLevel(BST, BST[root]?.left, value, level + 1) +
-        findNodeLevel(BST, BST[root]?.right, value, level + 1)
-      );
-    }
-  };
+  // const findNodeLevel = (
+  //   BST: INodes,
+  //   root: Nullable<number> = null,
+  //   value: number,
+  //   level: number = 0
+  // ): number => {
+  //   if (root == null) return 0;
+  //   else if (root == value) return level;
+  //   else {
+  //     return (
+  //       findNodeLevel(BST, BST[root]?.left, value, level + 1) +
+  //       findNodeLevel(BST, BST[root]?.right, value, level + 1)
+  //     );
+  //   }
+  // };
 
-  const findNodeRank = (BST: INodes, root: Nullable<number> = null, value: number): number => {
-    if (root == null) return 0;
-    if (value < root) return findNodeRank(BST, BST[root]?.left, value);
-    else if (value > root)
-      return BST[root]!.leftSize + 1 + findNodeRank(BST, BST[root]?.right, value);
-    else return BST[root]!.leftSize + 1;
-  };
+  // const findNodeRank = (BST: INodes, root: Nullable<number> = null, value: number): number => {
+  //   if (root == null) return 0;
+  //   if (value < root) return findNodeRank(BST, BST[root]?.left, value);
+  //   else if (value > root)
+  //     return BST[root]!.leftSize + 1 + findNodeRank(BST, BST[root]?.right, value);
+  //   else return BST[root]!.leftSize + 1;
+  // };
 
   return {
     BST,
@@ -1355,6 +1583,7 @@ export const useBSTUI = () => {
     traversal,
     findPredecessor,
     findSuccessor,
+    findNodeAtRank,
     findNodeLevel,
     findNodeRank,
   };

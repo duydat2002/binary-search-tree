@@ -21,6 +21,7 @@ const {
   insert,
   remove,
   traversal,
+  findNodeAtRank,
   findNodeLevel,
   findNodeRank,
 } = useBSTUI();
@@ -214,6 +215,32 @@ const handleTraverse = (mode: "Preorder" | "Inorder" | "Postorder") => {
   activeExtend.value = null;
 };
 
+const handleFindNodeAtRank = () => {
+  codeStep.value = 0;
+
+  action.value = `Find note at rank(${randomN.value})`;
+
+  codeTrace.value = findNodeAtRank(randomN.value);
+
+  isPlay.value = true;
+  isShow.value = false;
+  isShowStatus.value = true;
+  isShowTrace.value = true;
+};
+
+const handleFindNodeRank = () => {
+  codeStep.value = 0;
+
+  action.value = `Find note's rank(${randomN.value})`;
+
+  codeTrace.value = findNodeRank(randomN.value);
+
+  isPlay.value = true;
+  isShow.value = false;
+  isShowStatus.value = true;
+  isShowTrace.value = true;
+};
+
 const toggle = () => {
   if (isShow.value) activeExtend.value = null;
   isShow.value = !isShow.value;
@@ -345,13 +372,29 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
           </div>
         </div>
       </div>
-      <div class="item">
+      <div class="item" @click="toggleExtend('FindNodeAtRank')">
         <span>Find node at rank(r)</span>
-        <div class="extend"></div>
+        <div v-if="activeExtend == 'FindNodeAtRank'" class="extend">
+          <div class="input">
+            <span>N = </span>
+            <input class="small" type="number" min="1" v-model="randomN" />
+          </div>
+          <div class="button" @click="handleFindNodeAtRank">
+            <span>Find</span>
+          </div>
+        </div>
       </div>
-      <div class="item">
+      <div class="item" @click="toggleExtend('FindNode\'sRank')">
         <span>Find node's rank(n)</span>
-        <div class="extend"></div>
+        <div v-if="activeExtend == 'FindNode\'sRank'" class="extend">
+          <div class="input">
+            <span>N = </span>
+            <input class="small" type="number" min="1" v-model="randomN" />
+          </div>
+          <div class="button" @click="handleFindNodeRank">
+            <span>Find</span>
+          </div>
+        </div>
       </div>
       <div class="item">
         <span>Find node's level(n)</span>
