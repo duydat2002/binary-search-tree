@@ -100,3 +100,13 @@ export const FIND_NODE_RANK_TRACE = [
      return ls + 1 + node rank at right child`,
   "else return ls + 1",
 ];
+
+export const FIND_NODE_LEVEL_TRACE = [
+  "if this node child == null",
+  "   return null",
+  "else if value < this node value",
+  "   increment level, search node in left",
+  "else if value > this node value",
+  "   increment level, search node in right",
+  "else return this node level",
+];

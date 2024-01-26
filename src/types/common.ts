@@ -12,4 +12,4 @@ export type TExtend =
   | "Predec-/Succ-essor"
   | "FindNodeAtRank"
   | "FindNode'sRank"
-  | "FindNote'sLevel";
+  | "FindNode'sLevel";

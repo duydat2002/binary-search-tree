@@ -15,6 +15,7 @@ import {
   POSTORDER_TRACE,
   FIND_NODE_AT_RANK_TRACE,
   FIND_NODE_RANK_TRACE,
+  FIND_NODE_LEVEL_TRACE,
 } from "@/constants";
 
 export const useBSTUI = () => {
@@ -678,6 +679,7 @@ export const useBSTUI = () => {
       codeTrace.traces.push(trace);
     }
 
+    resetLeftSize(tempBST);
     BST.value = tempBST;
 
     return codeTrace;
@@ -1346,7 +1348,7 @@ export const useBSTUI = () => {
         codeTrace.traces.push(trace);
       } else {
         trace = createTrace(tempBST, nodeTraversed, lineTraversed);
-        trace.status = `Value ${value} is not found.`;
+        trace.status = `Node ${value} is not found.`;
         codeTrace.traces.push(trace);
       }
     }
@@ -1431,7 +1433,113 @@ export const useBSTUI = () => {
     }
   };
 
-  const findNodeLevel = () => {};
+  const findNodeLevel = (value: number) => {
+    resetCodeTrace();
+    const tempBST = { ...BST.value };
+    let nodeTraversed: { [key: string]: boolean } = {};
+    let lineTraversed: { [key: string]: boolean } = {};
+
+    let cur = tempBST["root"]?.value || null;
+
+    let trace = createTrace(tempBST);
+    codeTrace.codes = FIND_NODE_LEVEL_TRACE;
+
+    let level = 0;
+    let isFound = true;
+    if (cur == null) {
+      trace.status = `The Binary Search Tree is empty.`;
+      codeTrace.traces.push(trace);
+    } else {
+      while (cur != null && cur != value) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Comparing ${value} with ${cur}.`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: `level = ${level}`,
+        } as UINode;
+        nodeTraversed[cur] = true;
+        codeTrace.traces.push(trace);
+
+        if (value < cur) {
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `${value} is smaller than ${cur}.`;
+          trace.nodes[cur] = {
+            ...trace.nodes[cur],
+            extraText: "^",
+          } as UINode;
+          trace.codeIndex = tempBST[cur]!.left != null ? 2 : 0;
+          codeTrace.traces.push(trace);
+
+          if (tempBST[cur]!.left != null) {
+            cur = tempBST[cur]!.left!;
+
+            trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+            trace.lines[cur] = {
+              ...trace.lines[cur],
+              isTraver: true,
+            } as UILine;
+            lineTraversed[cur] = true;
+            trace.status = `So search on left.`;
+            trace.codeIndex = 3;
+            codeTrace.traces.push(trace);
+
+            level++;
+          } else {
+            isFound = false;
+            break;
+          }
+        } else if (value > cur) {
+          trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+          trace.status = `${value} is greater than ${cur}.`;
+          trace.nodes[cur] = {
+            ...trace.nodes[cur],
+            extraText: "^",
+          } as UINode;
+          trace.codeIndex = tempBST[cur]!.right != null ? 4 : 0;
+          codeTrace.traces.push(trace);
+
+          if (tempBST[cur]!.right != null) {
+            cur = tempBST[cur]!.right!;
+
+            trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+            trace.lines[cur] = {
+              ...trace.lines[cur],
+              isTraver: true,
+            } as UILine;
+            lineTraversed[cur] = true;
+            trace.status = `So search on right.`;
+            trace.codeIndex = 5;
+            codeTrace.traces.push(trace);
+
+            level++;
+          } else {
+            isFound = false;
+            break;
+          }
+        }
+      }
+
+      if (cur != null && isFound) {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Node ${value} is found. Node ${value} has level ${level}`;
+        trace.nodes[cur] = {
+          ...trace.nodes[cur],
+          isTraver: true,
+          extraText: `level = ${level}`,
+        } as UINode;
+        trace.codeIndex = 6;
+        codeTrace.traces.push(trace);
+      } else {
+        trace = createTrace(tempBST, nodeTraversed, lineTraversed);
+        trace.status = `Node ${value} is not found.`;
+        trace.codeIndex = 1;
+        codeTrace.traces.push(trace);
+      }
+    }
+
+    return codeTrace;
+  };
 
   const createTrace = (
     BSTObj: INodes,
@@ -1539,6 +1647,27 @@ export const useBSTUI = () => {
       codes: [],
       traces: [trace],
     } as ICodeTrace;
+  };
+
+  const resetLeftSize = (BST: INodes) => {
+    for (let key in BST) {
+      if (key == "root") continue;
+      const left = BST[key]!.left;
+      BST[key] = {
+        ...BST[key],
+        leftSize: calcSize(left),
+      } as UINode;
+    }
+
+    function calcSize(cur: Nullable<number>): number {
+      if (cur == null) return 0;
+      else {
+        const left = BST[cur]!.left;
+        const right = BST[cur]!.right;
+
+        return 1 + (left ? calcSize(left) : 0) + (right ? calcSize(right) : 0);
+      }
+    }
   };
 
   // const findNodeLevel = (
