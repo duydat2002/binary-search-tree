@@ -136,7 +136,10 @@ onMounted(() => {
           <span>{{ traceLength > 0 ? `${codeStep + 1}/${traceLength + 1}` : `0/0` }}</span>
         </div>
       </div>
-      <div class="about"></div>
+      <div class="more">
+        <span>Guide</span>
+        <span>About team</span>
+      </div>
     </div>
   </div>
 </template>
@@ -226,5 +229,15 @@ onMounted(() => {
 
 .progress span {
   margin-left: 10px;
+}
+
+.more {
+  display: flex;
+  gap: 10px;
+}
+
+.more > span:hover {
+  cursor: pointer;
+  text-decoration: underline;
 }
 </style>

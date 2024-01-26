@@ -62,10 +62,11 @@ const handleRandom = () => {
 
 const handleInsert = () => {
   // Check
-  const arr = listNode.value.split(",");
+  const arr = listNode.value.split(",").map((n) => n.trim());
   const hasNaN = arr.some((a) => a != "" && isNaN(Number(a)));
+  const hasNotNumber = arr.every((a) => a == "");
 
-  if (hasNaN) {
+  if (hasNaN || hasNotNumber) {
     inserError.value = true;
   } else {
     inserError.value = false;
@@ -166,10 +167,11 @@ const handleGetSuccessor = () => {
 
 const handleRemove = () => {
   // Check
-  const arr = listNode.value.split(",");
+  const arr = listNode.value.split(",").map((n) => n.trim());
   const hasNaN = arr.some((a) => a != "" && isNaN(Number(a)));
+  const hasNotNumber = arr.every((a) => a == "");
 
-  if (hasNaN) {
+  if (hasNaN || hasNotNumber) {
     removeError.value = true;
   } else {
     removeError.value = false;
@@ -389,7 +391,7 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
         <span>Find node at rank(r)</span>
         <div v-if="activeExtend == 'FindNodeAtRank'" class="extend">
           <div class="input">
-            <span>N = </span>
+            <span>r = </span>
             <input class="small" type="number" min="1" v-model="randomN" />
           </div>
           <div class="button" @click="handleFindNodeAtRank">
@@ -401,7 +403,7 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
         <span>Find node's rank(n)</span>
         <div v-if="activeExtend == 'FindNode\'sRank'" class="extend">
           <div class="input">
-            <span>N = </span>
+            <span>n = </span>
             <input class="small" type="number" min="1" v-model="randomN" />
           </div>
           <div class="button" @click="handleFindNodeRank">
@@ -413,7 +415,7 @@ const toggleExtend = (extend: Nullable<TExtend>) => {
         <span>Find node's level(n)</span>
         <div v-if="activeExtend == 'FindNode\'sLevel'" class="extend">
           <div class="input">
-            <span>N = </span>
+            <span>n = </span>
             <input class="small" type="number" min="1" v-model="randomN" />
           </div>
           <div class="button" @click="handleFindNodeLevel">

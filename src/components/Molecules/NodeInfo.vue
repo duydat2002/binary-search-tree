@@ -49,6 +49,7 @@ const { node } = storeToRefs(useBSTStore());
   margin-right: 50px;
   background: #ff8a27;
   padding: 5px;
+  border-radius: 8px;
 }
 
 .container table td {
