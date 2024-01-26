@@ -14,6 +14,7 @@ import Controller from "@/components/Molecules/Controller.vue";
 import { ref, computed, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useBSTStore, useControllerStore } from "@/store";
+import NodeInfo from "../Molecules/NodeInfo.vue";
 
 const { codeTrace, codeStep } = storeToRefs(useBSTStore());
 const { isPlay } = storeToRefs(useControllerStore());
@@ -108,6 +109,7 @@ onMounted(() => {
     <Controller />
     <TraceView />
     <BSTView />
+    <NodeInfo />
     <div class="bottom-bar">
       <div class="speed">
         <InputRange v-model:propValue.number="speed" :min="1" />

@@ -1,8 +1,9 @@
-import { ICodeTrace, INodes } from "@/types";
+import { ICodeTrace, INodes, UINode } from "@/types";
 import { defineStore } from "pinia";
 
 interface IState {
   BST: INodes;
+  node: Nullable<UINode>;
   codeTrace: ICodeTrace;
   codeStep: number;
   action: string;
@@ -11,6 +12,7 @@ interface IState {
 export const useBSTStore = defineStore("bst", {
   state: (): IState => ({
     BST: {},
+    node: null,
     codeTrace: {
       codes: [],
       traces: [],
@@ -21,6 +23,9 @@ export const useBSTStore = defineStore("bst", {
   actions: {
     setBST(value: INodes) {
       this.BST = value;
+    },
+    setNode(value: Nullable<UINode>) {
+      this.node = value;
     },
     setCodeTrace(value: ICodeTrace) {
       this.codeTrace = value;
