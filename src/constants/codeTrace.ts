@@ -96,7 +96,7 @@ export const FIND_NODE_RANK_TRACE = [
   "ls = size of this left subtree",
   `if value < this node value,<br>
      return node rank at left child`,
-  `else if r > this node value,<br>
+  `else if value > this node value,<br>
      return ls + 1 + node rank at right child`,
   "else return ls + 1",
 ];

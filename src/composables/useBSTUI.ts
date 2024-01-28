@@ -152,7 +152,7 @@ export const useBSTUI = () => {
 
     if (cur != null && isFound) {
       trace = createTrace(tempBST, nodeTraversed, lineTraversed);
-      trace.status = `Value ${value} is found.`;
+      trace.status = `Node ${value} is found.`;
       trace.nodes[cur] = {
         ...trace.nodes[cur],
         isTraver: true,
@@ -162,7 +162,7 @@ export const useBSTUI = () => {
       codeTrace.traces.push(trace);
     } else {
       trace = createTrace(tempBST, nodeTraversed, lineTraversed);
-      trace.status = `Value ${value} is not found.`;
+      trace.status = `Node ${value} is not found.`;
       trace.codeIndex = 1;
       codeTrace.traces.push(trace);
     }
@@ -356,7 +356,7 @@ export const useBSTUI = () => {
           tempBST[value]!.quantity += 1;
 
           trace = createTrace(tempBST, nodeTraversed, lineTraversed);
-          trace.status = `${value} is equal to ${value}, so just increment its frequency.`;
+          trace.status = `${value} is equal to ${value}, so just increment its quantity.`;
           trace.codeIndex = 6;
           trace.nodes[value] = {
             ...trace.nodes[value],
