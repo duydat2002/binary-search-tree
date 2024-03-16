@@ -2,6 +2,7 @@ import { UILine, UINode } from ".";
 
 export interface ICodeTrace {
   codes: string[];
+  guides: string[];
   traces: ITrace[];
 }
 

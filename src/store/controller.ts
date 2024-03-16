@@ -4,6 +4,7 @@ interface IState {
   isPlay: boolean;
   isShowStatus: boolean;
   isShowTrace: boolean;
+  isShowGuide: boolean;
 }
 
 export const useControllerStore = defineStore("controller", {
@@ -11,6 +12,7 @@ export const useControllerStore = defineStore("controller", {
     isPlay: false,
     isShowStatus: false,
     isShowTrace: false,
+    isShowGuide: false,
   }),
   actions: {},
 });

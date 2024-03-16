@@ -39,7 +39,7 @@ const emptyBST = () => {
   resetBST();
 
   codeStep.value = 0;
-  codeTrace.value = { codes: [], traces: [] };
+  codeTrace.value = { codes: [], guides: [], traces: [] };
 };
 
 const handleEmpty = () => {
@@ -74,12 +74,14 @@ const handleInsert = () => {
     codeStep.value = 0;
 
     let codes: string[] = [];
+    let guides: string[] = [];
     const traces: ITrace[] = [];
 
     arr.forEach((n) => {
       if (n != "") {
         const codeTrace = insert(Number(n));
         codes = codeTrace.codes;
+        guides = codeTrace.guides;
         traces.push(...codeTrace.traces);
       }
     });
@@ -88,6 +90,7 @@ const handleInsert = () => {
 
     codeTrace.value = {
       codes,
+      guides,
       traces,
     };
 
@@ -179,12 +182,14 @@ const handleRemove = () => {
     codeStep.value = 0;
 
     let codes: string[] = [];
+    let guides: string[] = [];
     const traces: ITrace[] = [];
 
     arr.forEach((n) => {
       if (n != "") {
         const codeTrace = remove(Number(n));
         codes = codeTrace.codes;
+        guides = codeTrace.guides;
         traces.push(...codeTrace.traces);
       }
     });
@@ -193,6 +198,7 @@ const handleRemove = () => {
 
     codeTrace.value = {
       codes,
+      guides,
       traces,
     };
 

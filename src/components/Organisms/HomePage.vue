@@ -15,9 +15,10 @@ import { ref, computed, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useBSTStore, useControllerStore } from "@/store";
 import NodeInfo from "../Molecules/NodeInfo.vue";
+import GuideModal from "../Molecules/GuideModal.vue";
 
 const { codeTrace, codeStep } = storeToRefs(useBSTStore());
-const { isPlay } = storeToRefs(useControllerStore());
+const { isPlay, isShowGuide } = storeToRefs(useControllerStore());
 
 const speed = ref(1);
 const intevalId = ref();
@@ -137,9 +138,17 @@ onMounted(() => {
         </div>
       </div>
       <div class="more">
-        <span>Guide</span>
+        <span
+          @click="
+            () => {
+              isShowGuide = !isShowGuide;
+            }
+          "
+          >Guide</span
+        >
         <span>About team</span>
       </div>
+      <GuideModal />
     </div>
   </div>
 </template>

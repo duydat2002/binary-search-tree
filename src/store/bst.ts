@@ -15,6 +15,7 @@ export const useBSTStore = defineStore("bst", {
     node: null,
     codeTrace: {
       codes: [],
+      guides: [],
       traces: [],
     },
     codeStep: 0,

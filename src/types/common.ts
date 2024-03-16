@@ -3,6 +3,13 @@ export interface IPoint {
   y: number;
 }
 
+export interface IPosition {
+  clientX: number | null;
+  clientY: number | null;
+  movementX: number;
+  movementY: number;
+}
+
 export type TExtend =
   | "Create"
   | "Search"

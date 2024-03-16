@@ -1,10 +1,10 @@
 import { ref } from "vue";
 import { ICodeTrace, INodes, ITrace, UILine, UINode } from "@/types";
 import {
-  INSERT_TRACE,
-  SEARCH_TRACE,
   NODE_PADDING,
   SVG_PADDING,
+  INSERT_TRACE,
+  SEARCH_TRACE,
   SEARCH_MIN_TRACE,
   SEARCH_MAX_TRACE,
   PREDECESSOR_TRACE,
@@ -16,6 +16,19 @@ import {
   FIND_NODE_AT_RANK_TRACE,
   FIND_NODE_RANK_TRACE,
   FIND_NODE_LEVEL_TRACE,
+  INSERT_GUIDE,
+  SEARCH_GUIDE,
+  SEARCH_MIN_GUIDE,
+  SEARCH_MAX_GUIDE,
+  PREDECESSOR_GUIDE,
+  SUCCESSOR_GUIDE,
+  REMOVE_GUIDE,
+  PREORDER_GUIDE,
+  INORDER_GUIDE,
+  POSTORDER_GUIDE,
+  FIND_NODE_AT_RANK_GUIDE,
+  FIND_NODE_RANK_GUIDE,
+  FIND_NODE_LEVEL_GUIDE,
 } from "@/constants";
 
 export const useBSTUI = () => {
@@ -23,6 +36,7 @@ export const useBSTUI = () => {
   BST.value["root"] = null;
   let codeTrace: ICodeTrace = {
     codes: [],
+    guides: [],
     traces: [],
   };
 
@@ -67,6 +81,7 @@ export const useBSTUI = () => {
   const resetCodeTrace = () => {
     codeTrace = {
       codes: [],
+      guides: [],
       traces: [],
     };
   };
@@ -80,6 +95,7 @@ export const useBSTUI = () => {
     let trace = createTrace(tempBST);
     trace.status = `The current BST rooted at ${tempBST["root"]?.value || "null"}.`;
     codeTrace.codes = SEARCH_TRACE;
+    codeTrace.guides = SEARCH_GUIDE;
     codeTrace.traces.push(trace);
 
     let isFound = true;
@@ -177,6 +193,7 @@ export const useBSTUI = () => {
     let lineTraversed: { [key: string]: boolean } = {};
 
     codeTrace.codes = SEARCH_MIN_TRACE;
+    codeTrace.guides = SEARCH_MIN_GUIDE;
     let trace = createTrace(tempBST);
     if (!tempBST["root"]?.value) {
       trace.status = `Tree is empty, there is no minimum value.`;
@@ -232,6 +249,7 @@ export const useBSTUI = () => {
     let lineTraversed: { [key: string]: boolean } = {};
 
     codeTrace.codes = SEARCH_MAX_TRACE;
+    codeTrace.guides = SEARCH_MAX_GUIDE;
     let trace = createTrace(tempBST);
     if (!tempBST["root"]?.value) {
       trace.status = `Tree is empty, there is no maximum value.`;
@@ -289,6 +307,7 @@ export const useBSTUI = () => {
     let trace = createTrace(tempBST);
     trace.status = `The current BST rooted at ${tempBST["root"]?.value || "null"}.`;
     codeTrace.codes = INSERT_TRACE;
+    codeTrace.guides = INSERT_GUIDE;
     codeTrace.traces.push(trace);
 
     let isNeedNewNode = true;
@@ -427,6 +446,7 @@ export const useBSTUI = () => {
 
     let trace: ITrace = createTrace(tempBST);
     codeTrace.codes = REMOVE_TRACE;
+    codeTrace.guides = REMOVE_GUIDE;
 
     let isFound = true;
     if (tempBST["root"] == null) {
@@ -692,6 +712,7 @@ export const useBSTUI = () => {
     let lineTraversed: { [key: string]: boolean } = {};
 
     codeTrace.codes = PREDECESSOR_TRACE;
+    codeTrace.guides = PREDECESSOR_GUIDE;
     let trace = createTrace(tempBST);
     if (Object.keys(tempBST).length <= 2) {
       trace.status = `The tree must have 2 or more nodes to find predecessor!`;
@@ -867,6 +888,7 @@ export const useBSTUI = () => {
     let lineTraversed: { [key: string]: boolean } = {};
 
     codeTrace.codes = SUCCESSOR_TRACE;
+    codeTrace.guides = SUCCESSOR_GUIDE;
     let trace = createTrace(tempBST);
     if (Object.keys(tempBST).length <= 2) {
       trace.status = `The tree must have 2 or more nodes to find successor!`;
@@ -1045,17 +1067,20 @@ export const useBSTUI = () => {
     let codeIndexLeft = 2;
     let codeIndexRight = 3;
     codeTrace.codes = PREORDER_TRACE;
+    codeTrace.guides = PREORDER_GUIDE;
 
     if (mode == "Inorder") {
       codeIndexVisit = 2;
       codeIndexLeft = 1;
       codeIndexRight = 3;
       codeTrace.codes = INORDER_TRACE;
+      codeTrace.guides = INORDER_GUIDE;
     } else if (mode == "Postorder") {
       codeIndexVisit = 3;
       codeIndexLeft = 1;
       codeIndexRight = 2;
       codeTrace.codes = POSTORDER_TRACE;
+      codeTrace.guides = POSTORDER_GUIDE;
     }
 
     let cur = tempBST["root"]?.value || null;
@@ -1219,6 +1244,7 @@ export const useBSTUI = () => {
 
     let trace = createTrace(tempBST);
     codeTrace.codes = FIND_NODE_AT_RANK_TRACE;
+    codeTrace.guides = FIND_NODE_AT_RANK_GUIDE;
     if (cur == null) {
       trace.status = `The Binary Search Tree is empty.`;
       codeTrace.traces.push(trace);
@@ -1331,6 +1357,7 @@ export const useBSTUI = () => {
 
     let trace = createTrace(tempBST);
     codeTrace.codes = FIND_NODE_RANK_TRACE;
+    codeTrace.guides = FIND_NODE_RANK_GUIDE;
 
     if (cur == null) {
       trace.status = `The Binary Search Tree is empty.`;
@@ -1443,6 +1470,7 @@ export const useBSTUI = () => {
 
     let trace = createTrace(tempBST);
     codeTrace.codes = FIND_NODE_LEVEL_TRACE;
+    codeTrace.guides = FIND_NODE_LEVEL_GUIDE;
 
     let level = 0;
     let isFound = true;
@@ -1645,6 +1673,7 @@ export const useBSTUI = () => {
 
     return {
       codes: [],
+      guides: [],
       traces: [trace],
     } as ICodeTrace;
   };

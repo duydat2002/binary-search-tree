@@ -118,6 +118,7 @@ const toggleTrace = () => {
 .status-container .content {
   background: #52bc69;
   text-wrap: wrap;
+  white-space: unset !important;
 }
 
 .trace-container {
