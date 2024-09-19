@@ -1,18 +1,23 @@
-# Vue 3 + TypeScript + Vite
+# Binary Search Tree Visualization
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+[binary-search-tree.vercel.app](https://binary-search-tree.vercel.app/)
 
-## Recommended IDE Setup
+This project is a visual representation of operations performed on a **Binary Search Tree (BST)**. Users can interactively add, remove, and search for elements, while visualizing how the tree changes with each operation.
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Features
 
-## Type Support For `.vue` Imports in TS
+- **Insert**: Add nodes to the binary search tree and visualize how they are positioned.
+- **Delete**: Remove nodes and observe how the tree restructures itself.
+- **Search**: Find nodes and highlight the path traversed in the tree.
+- **Traversal**: Perform different tree traversals (in-order, pre-order, post-order) and see the tree in various states.
+- **Find Predecessor**: Locate the predecessor of a given node (the largest node smaller than the given node).
+- **Find Successor**: Locate the successor of a given node (the smallest node larger than the given node).
+- **Find Node at Rank**: Find the node located at a specific rank in the tree (based on in-order traversal).
+- **Find Node's Rank**: Determine the rank (position) of a specific node within the in-order traversal of the tree.
+- **Find Node's Level**: Calculate and display the level (depth) of a specific node in the tree.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+## Preview
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+https://github.com/user-attachments/assets/8d3f8b1f-73ea-459a-83ee-ddf1ee6db33b
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+https://github.com/user-attachments/assets/b3e2bbe2-2b69-4e4c-a46f-41f4012aff87
